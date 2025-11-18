@@ -57,3 +57,16 @@
 14. Ist das Sammlungszeichen (CCODE) eine interne Klassifizierung? Nach welchem Verfahren wird es vergeben, welche Bedeutung hat es für die Organisation oder Aufstellung der Medien, und erhält jedes Medium genau einen einzigen CCODE?
 
 -
+
+15. Wie lief die Corona Pandemie für die Stadtbücherei Tübingen ab? (Wieso gab es so einen großen peak vor einem Lockdown? Wann wurde geschlossen wegen Lockdown, wann war wieder geöffnet?)
+
+-
+
+16. Was ist mit online-Ausleihen? Gibt es sowas in der Stadtbücherei und wenn ja, sind diese Daten auch in unserer Liste vertreten?
+
+-
+
+17. Wieso sind Loans per day, quasi nie 0? Hat das mit den unterschiedlichen Öffnungszeiten der Zweigstellen zu tun, oder mit online Ausleihe?
+
+-
+
