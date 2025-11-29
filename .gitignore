@@ -1,0 +1,11 @@
+# Ignore virtual environments
+venv/
+.env/
+
+# Ignore Jupyter checkpoint files
+**/.ipynb_checkpoints/
+
+# processed data (big files, can be regenerated)
+data/processed/
+
+.DS_Store
