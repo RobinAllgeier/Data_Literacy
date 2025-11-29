@@ -1,3 +1,6 @@
+## Project Structure
+
+```
 DATA_LITERACY/
 │
 ├── data/
@@ -9,3 +12,5 @@ DATA_LITERACY/
 │ └── protocols/ # Meeting notes
 │
 └── notebooks/ # Jupyter notebooks
+            
+```
