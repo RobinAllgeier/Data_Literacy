@@ -6,7 +6,7 @@ venv/
 **/.ipynb_checkpoints/
 
 # processed data (big files, can be regenerated)
-data/processed/
+dat/processed/
 
 .DS_Store
 
