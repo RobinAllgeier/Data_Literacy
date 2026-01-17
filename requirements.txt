@@ -84,7 +84,6 @@ rfc3339-validator==0.1.4
 rfc3986-validator==0.1.1
 rfc3987-syntax==1.1.0
 rpds-py==0.29.0
-seaborn==0.13.2
 Send2Trash==1.8.3
 setuptools==80.9.0
 six==1.17.0
@@ -102,5 +101,5 @@ wcwidth==0.2.14
 webcolors==25.10.0
 webencodings==0.5.1
 websocket-client==1.9.0
-plotly
-statsmodels
+tueplots>=0.0.12
+
