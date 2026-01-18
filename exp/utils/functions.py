@@ -19,5 +19,5 @@ def log_pearson_spearman(df: pd.DataFrame, x_col: str, y_col: str):
     r, p = pearsonr(x[mask], y[mask])
     rho, p_s = spearmanr(x[mask], y[mask])
 
-    print(f"Pearson  r   = {r:.4f}   p = {p:.3g}")
-    print(f"Spearman rho = {rho:.4f}   p = {p_s:.3g}")
+    print(f"Pearson  r   = {r:.4f}   p-value (\"null hypothesis: no correlation\") = {p:.3g}")
+    print(f"Spearman rho = {rho:.4f}   p-value (\"null hypothesis: no correlation\") = = {p_s:.3g}")
