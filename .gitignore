@@ -6,6 +6,22 @@ venv/
 **/.ipynb_checkpoints/
 
 # processed data (big files, can be regenerated)
-data/processed/
+dat/processed/
 
 .DS_Store
+
+notes/
+
+
+
+# latex
+doc/report/*.aux
+doc/report/*.bbl
+doc/report/*.blg
+doc/report/*.fdb_latexmk
+doc/report/*.fls
+doc/report/*.log
+doc/report/*.out
+doc/report/report_template.pdf
+doc/report/*.synctex.gz
+doc/report/sections/*.aux
