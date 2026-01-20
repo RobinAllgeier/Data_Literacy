@@ -1,6 +1,6 @@
 \section{Data and Methods}\label{sec:methods}
 
-In this section, describe \emph{what you did}. Roughly speaking, explain what data you worked with, how or from where it was collected, it's structure and size. Explain your analysis, and any specific choices you made in it. Depending on the nature of your project, you may focus more or less on certain aspects. If you collected data yourself, explain the collection process in detail. If you downloaded data from the net, show an exploratory analysis that builds intuition for the data, and shows that you know the data well. If you are doing a custom analysis, explain how it works and why it is the right choice. If you are using a standard tool, it may still help to briefly outline it. Cite relevant works. You can use the \verb|\citep| and \verb|\citet| commands for this purpose \citep{mackay2003information}.
+%In this section, describe \emph{what you did}. Roughly speaking, explain what data you worked with, how or from where it was collected, it's structure and size. Explain your analysis, and any specific choices you made in it. Depending on the nature of your project, you may focus more or less on certain aspects. If you collected data yourself, explain the collection process in detail. If you downloaded data from the net, show an exploratory analysis that builds intuition for the data, and shows that you know the data well. If you are doing a custom analysis, explain how it works and why it is the right choice. If you are using a standard tool, it may still help to briefly outline it. Cite relevant works. You can use the \verb|\citep| and \verb|\citet| commands for this purpose \citep{mackay2003information}.
 
 % This is the template for a figure from the original ICML submission pack. In lecture 10 we will discuss plotting in detail.
 % Refer to this lecture on how to include figures in this text.
@@ -18,3 +18,26 @@ In this section, describe \emph{what you did}. Roughly speaking, explain what da
 % \end{center}
 % \vskip -0.2in
 % \end{figure}
+
+\subsection{Data Collection and Description}
+This study investigates the borrowing behavior of users at the Tübingen City Library, as well as the frequency of late returns. The dataset was provided directly by the Tübingen City Library and covers borrowing records from 2019 to 2025. It encompasses over 2.4 million individual loan transactions and includes the following key variables: borrowing and return timestamps, media types, user categories, number of extensions, anonymized user identification numbers, and late return flags. Each record documents a complete transaction from initial borrowing to return.
+Domain knowledge was gathered through a personal interview with a staff member of the Tübingen City Library, providing contextual insights into the data collection processes, library operations, and data quality practices. Additional information was obtained through ongoing email communication with the library staff, which helped to clarify data inconsistencies and provide domain expertise for informed analysis decisions.
+
+\subsection{Data Quality Assessment: Sanity Checks}
+Prior to conducting any analysis, a comprehensive set of data quality checks was performed to validate internal consistency and identify potential data quality issues. These sanity checks were designed to detect anomalies without filtering or removing data at first, and gather information, regarding cleaning the data to ensure robust analysis. The following specific checks were implemented:
+
+\subsubsection{Timestamp and duration consistency}
+The integrity of temporal data was verified by checking for missing borrowing and return timestamps and by identifying logical inconsistencies, such as instances where return dates preceded borrowing dates. These checks are critical since all downstream analyses depend on accurate temporal information. No missing timestamps where found, regarding the issue dates, however about two percent of return dates were missing, which is expected for items that have not yet been returned, or were lost, and therefore still not returned.
+The same missing rate is also observed in the duration column, which is expected as duration is calculated from the timestamps. Further checks according the duration value revealed, that it is calculated correctly it does not contain any inconsistencies.
+
+\subsubsection{Late Return Consistency}
+The consistency between late return flags and the reported number of days late was validated. Records were identified where the late flag indicated ``not late'' but the days-late counter was positive, and conversely, records marked as late but with zero or missing days-late values. Additionally, implausible values in the extensions column (negative extensions or more than 6 extensions) were checked. There are a view cases where the number of extentions is higher than 6, which should not be possible according to the library's policies. But because of the low number of affected rows (0.003\%), these where not further investigated.
+
+\subsubsection{Identifier Integrity}
+Critical identifiers (issue IDs, user IDs, and media barcodes) were also verified for completeness and uniqueness. The presence of duplicate issue IDs would indicate data integrity problems or system errors, but no such duplicates were found. Missing user IDs or media barcodes were also checked, as these would hinder the ability to track borrowing behavior accurately. A missing rate of about 6.7\% was found in the user ID column, which will be handled accordingly in the analysis.
+
+\subsubsection{Duplicate Analysis}
+Various forms of duplicates were examined: (1) completely identical rows, (2) rows with identical borrowing and return timestamps, (3) identical timestamps for the same user, and (4) identical timestamps across different users, which could indicate system errors. Cases where a single user borrowed multiple items at the exact same timestamp were also analyzed. After contacting the library staff, it was confirmed that such cases are valid, as users can borrow multiple items in one transaction.
+
+\subsection{Analysis Approach}
+For the analysis of borrowing behavior and late returns, descriptive statistical methods were employed to identify patterns and trends in user behavior. These methods were chosen to provide a comprehensive understanding of borrowing dynamics and to isolate factors associated with late returns. The analysis focuses on temporal patterns, user segments, media types, and their relationships with return timeliness.
