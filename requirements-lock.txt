@@ -1,0 +1,16 @@
+contourpy==1.3.3
+cycler==0.12.1
+fonttools==4.61.1
+kiwisolver==1.4.9
+-e git+https://github.com/RobinAllgeier/Data_Literacy.git@121148177ad3532ee8234baeab08b2ddeac238ff#egg=libary_analysis
+matplotlib==3.10.8
+numpy==2.4.1
+packaging==25.0
+pandas==2.3.3
+pillow==12.1.0
+pyparsing==3.3.1
+python-dateutil==2.9.0.post0
+pytz==2025.2
+six==1.17.0
+tueplots==0.2.1
+tzdata==2025.3

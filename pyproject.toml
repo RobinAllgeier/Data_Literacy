@@ -1,0 +1,13 @@
+[project]
+name = "libary_analysis"
+version = "0.1.0"
+description = "Data literacy analysis pipeline of the libary data of the public libary tübingen"
+requires-python = ">=3.10"
+
+dependencies = [
+    "pandas",
+    "numpy",
+    "matplotlib",
+    "pyarrow",
+    "tueplots"
+]
