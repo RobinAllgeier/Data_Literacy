@@ -2,6 +2,9 @@
 venv/
 .env/
 .venv
+__pycache__/
+*.pyc
+*.log
 
 # Ignore Jupyter checkpoint files
 **/.ipynb_checkpoints/
