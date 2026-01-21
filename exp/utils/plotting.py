@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 from cycler import cycler
 from tueplots import bundles
+from tueplots.constants.color import palettes
+from tueplots import cycler
 
 
 def setup_plotting():
@@ -16,4 +18,5 @@ def setup_plotting():
     plt.rcParams["text.usetex"] = False
 
     # Define a custom color cycle (TU red)
-    plt.rcParams["axes.prop_cycle"] = cycler(color=["#a51e36"])
+    #plt.rcParams["axes.prop_cycle"] = cycler(color=["#a51e36"])
+    plt.rcParams.update(cycler.cycler(color=palettes.tue_plot))
