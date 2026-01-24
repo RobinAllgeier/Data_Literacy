@@ -12,7 +12,7 @@ def apply_style() -> None:
     """
     plt.rcParams.update(
         bundles.icml2024(
-            column="full",   # "half" or "full"
+            column="half",   # "half" or "full"
             nrows=1,
             ncols=1,
         )

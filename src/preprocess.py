@@ -98,6 +98,9 @@ def _remove_weird_loans_using_closed_days(df: pd.DataFrame, closed_days: pd.Data
     return df
 
 
+
+# Todo: remove mondays and sundaysx
+
 def preprocess_borrowings(df: pd.DataFrame, *, closed_days: pd.DataFrame) -> pd.DataFrame:
     """
     Clean and validate the borrowings dataset.

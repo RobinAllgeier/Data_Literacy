@@ -16,6 +16,13 @@ dat/processed/
 
 notes/
 
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+
 
 
 # latex

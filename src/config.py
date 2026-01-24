@@ -54,13 +54,8 @@ SOURCE_YEAR_COL = "source_year"
 # --- closed days/calender rules ---
 CLOSED_DATE_COL = "schliesstag"
 
-# ---------- Derived / feature columns ----------
-LATE_FLAG_COL = "late_flag"
-ISSUE_SESSION_COL = "issue_session"
-SESSION_INDEX_COL = "session_index"
-SESSION_SIZE_COL = "session_size"
-EXPERIENCE_STAGE_COL = "experience_stage"
 
+# ---------- Preprocessing ----------
 
 # library open days: Tue–Sat (Mon..Sun: 0,1,1,1,1,1,0)
 LIB_WEEKMASK = "0111110"
@@ -68,10 +63,39 @@ LIB_WEEKMASK = "0111110"
 BASE_ALLOWED_OPEN_DAYS = 28 # base allowed open days for loan duration calculation
 MAX_EXTENSIONS_CAP = 6 # rule of the libary for max extensions
 
+# ---------- Derived / feature columns ----------
+LATE_FLAG_COL = "late_flag"
+
+# user-session features
+ISSUE_SESSION_COL = "issue_session"
+SESSION_INDEX_COL = "session_index"
+SESSION_SIZE_COL = "session_size"
+SESSION_LATE_FLAG_COL = "session_late_flag"
+SESSION_EXTENSION_FLAG_COL = "session_extension_flag"
+EXPERIENCE_STAGE_COL = "experience_stage"
+
+# timing features
+WEEKDAY_COL = "weekday"
+HOUR_COL = "hour"
+
+# regularity metric
+USER_MODAL_WEEKDAY_COL = "user_modal_weekday"
+USER_MODAL_HOUR_COL = "user_modal_hour"
+USER_MATCH_TYPICAL_COL = "matches_typical_time"
+
+
+
 
 # ---------- Analysis parameters ----------
+
+# --- plot_1 learning-curve plot ---
 EXPERIENCE_CUTOFF = 3          # early vs experienced threshold (session_index <= 3)
-MAX_SESSION_INDEX_PLOT = 30    # cap x-axis to avoid long tail dominating
+MAX_SESSION_INDEX_PLOT = 25    # cap x-axis to avoid long tail dominating
+LEARNING_CURVE_SMOOTHING = 3  # moving average window size for learning curve plot
+
+
+
+
 
 # For plot 2: 
 

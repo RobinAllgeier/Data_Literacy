@@ -4,51 +4,94 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+import pandas as pd
+
 from src.config import (
     RAW_BORROWINGS_DIR,
     CLOSED_DAYS_FILE,
+    PROCESSED_DIR,
     PipelineConfig,
 )
-from src.io import load_borrowings_raw, load_closed_days, save_processed
+from src.io import (
+    load_borrowings_raw,
+    load_closed_days,
+    save_processed,
+    load_processed_version
+)
 from src.preprocess import preprocess_borrowings
 from src.features import add_features
 from src.validate import validate_borrowings
 
 from src.plotting.plot_1_learning_curve import make_plot as plot1
+from src.plotting.plot_2a_libary_visit_clock import make_plot as plot2a
+from src.plotting.plot_2b_user_regularity_vs_random import make_plot as plot2b
 
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Borrowings pipeline: raw -> processed + features")
-    p.add_argument("--version", default="v1", help="processed dataset version folder (e.g. v1, v2)")
+    p.add_argument(
+        "--version",
+        default="v1",
+        help="processed dataset version folder (e.g. v1, v2)"
+    )
+    p.add_argument(
+        "--use-processed",
+        action="store_true",
+        help="load newest processed dataset and skip preprocessing & feature generation"
+    )
     return p.parse_args()
+
+
+
 
 
 def main() -> None:
     args = parse_args()
     cfg = PipelineConfig(raw_input=RAW_BORROWINGS_DIR, processed_version=args.version)
 
-    # 1) load
-    df_raw = load_borrowings_raw(cfg.raw_input)
-    closed = load_closed_days(CLOSED_DAYS_FILE)
+    # --------------------------------------------------
+    # FAST PATH: load processed data only
+    # --------------------------------------------------
+    if args.use_processed:
+        df_feat = load_processed_version(PROCESSED_DIR, args.version)
 
-    # 2) preprocess
-    df_clean = preprocess_borrowings(df_raw, closed_days=closed)
+    # --------------------------------------------------
+    # FULL PIPELINE
+    # --------------------------------------------------
+    else:
+        # 1) load raw
+        df_raw = load_borrowings_raw(cfg.raw_input)
+        closed = load_closed_days(CLOSED_DAYS_FILE)
 
-    # 3) features
-    df_feat = add_features(df_clean)
+        # 2) preprocess
+        df_clean = preprocess_borrowings(df_raw, closed_days=closed)
 
-    # 4) validate
-    validate_borrowings(df_feat)
+        # 3) features
+        df_feat = add_features(df_clean)
 
-    # 5) save processed
-    save_processed(df_feat, cfg.processed_out_dir, version=cfg.processed_version)
+        # 4) validate
+        validate_borrowings(df_feat)
 
-    print(f"[main] saved processed dataset to: {cfg.processed_out_dir}")
+        # 5) save processed
+        save_processed(
+            df_feat,
+            cfg.processed_out_dir,
+            version=cfg.processed_version
+        )
 
+        print(f"[main] saved processed dataset to: {cfg.processed_out_dir}")
+
+    # --------------------------------------------------
+    # PLOTS
+    # --------------------------------------------------
     cfg.figures_out_dir.mkdir(parents=True, exist_ok=True)
-
-    plot1(df_feat, cfg.figures_out_dir / "plot_1_learning_curve.pdf")
+    #plot1(df_feat, cfg.figures_out_dir / "plot_1_learning_curve.pdf")
+    #plot2a(df_feat, cfg.figures_out_dir / "plot_2_library_visit_regularities.pdf")
+    plot2b(df_feat, cfg.figures_out_dir / "plot_2b_user_regularity_vs_random.pdf")
 
 
 if __name__ == "__main__":
     main()
+
+
+

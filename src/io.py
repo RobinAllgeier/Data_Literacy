@@ -70,5 +70,23 @@ def save_processed(df: pd.DataFrame, out_dir: Path, version: str) -> None:
         json.dump(metadata, f, indent=2)
 
 
-def load_processed(out_dir: Path) -> pd.DataFrame:
-    return pd.read_parquet(out_dir / "borrowings.parquet")
+def load_processed_version(processed_root: Path, version: str) -> pd.DataFrame:
+    """
+    Load a specific processed dataset version, e.g. version='v1'.
+    """
+    out_dir = processed_root / version
+
+    if not out_dir.exists() or not out_dir.is_dir():
+        raise FileNotFoundError(f"Processed version not found: {out_dir}")
+
+    parquet_path = out_dir / "borrowings.parquet"
+    meta_path = out_dir / "metadata.json"
+
+    if not parquet_path.exists():
+        raise FileNotFoundError(f"Missing borrowings.parquet in {out_dir}")
+
+    if not meta_path.exists():
+        raise FileNotFoundError(f"Missing metadata.json in {out_dir}")
+
+    print(f"[io] loading processed dataset version: {version}")
+    return pd.read_parquet(parquet_path)
