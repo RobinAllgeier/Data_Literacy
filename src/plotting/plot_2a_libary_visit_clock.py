@@ -147,6 +147,7 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
 
     # --- filled half-hour "bars" (sectors) from center to value ---
     # Draw Tue–Fri first, then Saturday with transparent orange on top
+    # Use matching edgecolor to avoid gaps between bars
     ax.bar(
         theta_starts,
         sat,
@@ -155,7 +156,8 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
         align="edge",
         color="tab:orange",
         alpha=1.0,
-        edgecolor="none",
+        edgecolor="tab:orange",
+        linewidth=0.5,
         zorder=1,
     )
     
@@ -167,45 +169,48 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
         align="edge",
         color="tab:blue",
         alpha=1.0,
-        edgecolor="none",
+        edgecolor="tab:blue",
+        linewidth=0.5,
         zorder=1.1,
     )
 
     r_max = float(max(np.max(tue_fri), np.max(sat), 1.0))
     ax.set_rlim(0, r_max * 1.15)
 
-    # Grey rings for CLOSED times (outer = Tue–Fri, inner = Sat)
-    outer_bottom = r_max * 1.03
+    # Grey rings for CLOSED times (outer = Sat, inner = Tue–Fri)
+    # Group consecutive closed bins to avoid gaps
+    def draw_closed_rings(closed_mask, bottom, height, alpha):
+        i = 0
+        while i < len(closed_mask):
+            if closed_mask[i]:
+                # Find end of consecutive closed bins
+                j = i
+                while j < len(closed_mask) and closed_mask[j]:
+                    j += 1
+                # Draw one bar from theta_starts[i] to theta_edges[j]
+                total_width = theta_edges[j] - theta_starts[i]
+                ax.bar(
+                    float(theta_starts[i]),
+                    height,
+                    width=float(total_width),
+                    bottom=bottom,
+                    align="edge",
+                    color="lightgray",
+                    edgecolor="none",
+                    alpha=alpha,
+                    zorder=0,
+                )
+                i = j
+            else:
+                i += 1
+
+    outer_bottom = r_max * 1.06
     outer_height = r_max * 0.07
-    for i in range(48):
-        if closed_tue_fri[i]:
-            ax.bar(
-                float(theta_starts[i]),
-                outer_height,
-                width=float(theta_widths[i]),
-                bottom=outer_bottom,
-                align="edge",
-                color="lightgray",
-                edgecolor="none",
-                alpha=1.0,
-                zorder=0,
-            )
+    draw_closed_rings(closed_sat, outer_bottom, outer_height, 1.0)
 
     inner_bottom = r_max * 0.94
     inner_height = r_max * 0.07
-    for i in range(48):
-        if closed_sat[i]:
-            ax.bar(
-                float(theta_starts[i]),
-                inner_height,
-                width=float(theta_widths[i]),
-                bottom=inner_bottom,
-                align="edge",
-                color="lightgray",
-                edgecolor="none",
-                alpha=0.7,
-                zorder=0,
-            )
+    draw_closed_rings(closed_tue_fri, inner_bottom, inner_height, 0.7)
 
     # Ticks: map minutes -> raw theta -> unwrap consistently
     tick_minutes = np.array(
@@ -222,7 +227,7 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     ax.legend(loc="upper right", bbox_to_anchor=(1.25, 1.10), frameon=False)
     ax.text(
         0.5, -0.16,
-        "Grey rings: closed times (outer = Tue–Fri, inner = Sat)\n"
+        "Grey rings: closed times (outer = Sat, inner = Tue–Fri)\n"
         "Clock angles are nonlinearly scaled to compress 20:00–09:00.",
         transform=ax.transAxes,
         ha="center", va="top",
