@@ -110,7 +110,7 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     ax1.plot(x, curve_smooth, linewidth=2, marker="o", markersize=3)
 
     ax1.set_xlabel("Borrowing order (per user)")
-    ax1.set_ylabel(r"Session with $\geq 1$ late item (%)")
+    ax1.set_ylabel(r"Session with $\geq 1$ late item")
     ax1.set_title("Session Learning Curve with Extension Rate")
 
     ax1.xaxis.set_major_locator(MultipleLocator(5))
@@ -137,7 +137,7 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
         marker="o",
         markersize=3
     )
-    ax2.set_ylabel("Sessions with extension (%)")
+    ax2.set_ylabel("Sessions with extension")
 
     # Right axis: major ticks as percent (0 decimals)
     ax2.yaxis.set_major_formatter(PercentFormatter(xmax=1.0, decimals=0))
