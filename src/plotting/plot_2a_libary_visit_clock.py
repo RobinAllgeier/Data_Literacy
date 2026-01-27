@@ -65,7 +65,7 @@ def _unwrap_theta_edges(theta_edges: np.ndarray) -> np.ndarray:
 
 def make_plot(df: pd.DataFrame, outpath) -> None:
     apply_style()
-    plt.rcParams.update(bundles.icml2024(column="full", nrows=1, ncols=1))
+    #plt.rcParams.update(bundles.icml2024(column="full", nrows=1, ncols=1))
 
     outpath = Path(outpath) if outpath is not None else None
     t0 = time.perf_counter()
