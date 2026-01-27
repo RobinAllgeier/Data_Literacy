@@ -25,18 +25,18 @@ Domain knowledge was gathered through a personal interview with a staff member o
 
 \subsection{Data Quality Assessment: Sanity Checks}
 Proir to conducting any analysis, a comprehensive set of data quality checks were preformed to validate internal consistency and identify potential data quality issues. The following checks were implemented:
-\textbf{Missing Values:} The proportion of missing values was assessed for each column. Retrun timestamps were missing in apporximately 2\% of rows, which is expected for currently borrowed items and therefore retained. User IDs showed a missing rate of 6.7\%, which was handled accordingly in subsequent analyses. All other relevant columns had such low missing rates, that they were considered negligible. 
+\textbf{Missing Values:} The proportion of missing values was assessed for each column. Retrun timestamps were missing in apporximately 2\% of rows, which is expected for currently borrowed or lost items and therefore retained. User IDs showed a missing rate of 6.7\%, which was handled accordingly in subsequent analyses. All other relevant columns had such low missing rates, that they were considered negligible. 
 \textbf{Temporal Consistency:} The integrity of temporal data was verified by checking for logical inconsistencies, such as rerurn dates preceding borrowing dates and a correct calculation of duration values from the timestamps. 
-\textbf{Late Return Consistency:} The consistency between late return flags and the number of days late was validated. Additionally, implausible values in the extensions column were checked, only a few cases with more than six extentions were identified (0.003\% of rows), which  but were not further investugated due to their negligible impact.
-\textbf{Dublicate Analysis:} Various forms of duplicates were examined. No exact duplicates were found, but identical borrowing timestamps occurred when useres borrowed multiple items in one transaction, limited to the same user ID and a maximum of seven items per transaction. These were retained as they represent valid borrowing behavior.
+\textbf{Late Return Consistency:} The consistency between late return flags and the number of days late was validated. Additionally, implausible values in the extensions column were checked. Only a few cases with more than six extentions were identified (0.003\%), which  but were not further investugated due to their negligible impact.
+\textbf{Dublicate Analysis:} Various forms of duplicates were examined. No exact duplicates were found, but identical borrowing timestamps occurred when useres borrowed multiple items in one transaction, with a maximum of seven items per transaction. These were retained as they represent valid borrowing behavior.
 
 \subsection{Data cleaning}
-Based on the result of the data quality assessment and the analysis approach defined above, the data was cleaned, based on four main rules:
+Based on the result of the data quality assessment, the data was cleaned, based on four rules. The following entries were removed from the dataset:
 \begin{itemize}
-    \item Entries with missing retuern timestamps were retained, as they represent currently borrowed or lost items.
-    \item Entries with a borrowing time longer than the 196 days were removed, because they extend the maximum borrowing period of 28 days and six extentions, which are considered implausible.
-    \item Borrowings taken by library`s staff members and system entries, which do not reflect typical user behavior, were removed based on their user category.
-    \item For some analyses, all media types exept for books were removed, because they have different borrowing duration limits and would distort the results.
+    \item Entries with missing retuern timestamps, as they represent currently borrowed or lost items.
+    \item Entries with a borrowing time longer than the 196 days, because they extend the maximum borrowing period of 28 days and six extentions, which are considered implausible.
+    \item Borrowings taken by library`s staff members and system entries, which do not reflect typical user behavior.
+    \item For some analyses, all media types other than books, because they have different borrowing duration limits and would distort the results.
 \end{itemize}
 These cleaning steps ensured that the dataset used for analysis was both reliable and relevant, thereby enhancing the validity of the findings.
 
