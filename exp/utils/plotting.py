@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from cycler import cycler
 from tueplots import bundles
 from tueplots.constants.color import palettes
-from tueplots import cycler
+# from tueplots import cycler
 
 
 def setup_plotting():
