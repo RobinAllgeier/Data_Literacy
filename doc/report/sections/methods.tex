@@ -49,15 +49,30 @@ Based on the result of the data quality assessment and the analysis approach def
 \end{itemize}
 These cleaning steps ensured that the dataset used for analysis was both reliable and relevant, thereby enhancing the validity of the findings.
 
-\subsection{Analysis Approach}
-The analysis focuses on three key aspects of user behavior at the library:
 
-\subsubsection{Temporal Distribution of Library Visits}
-First, we investigate the distribution of borrowing events across different times of the day and days of the week. Library opening hours (09:00–20:00) were distinguished from closed hours to identify peak activity periods. We aggregated the number of unique users per 30-minute time bin separately for weekdays and weekends, revealing patterns of user traffic throughout the day. 
+\subsection{Analysis Methods}
 
-\subsubsection{User Visit Regularity}
-Second, we examine whether individual users visit the library at predictable times. 
+To move from item-level borrowing records to user-level behavioral analysis, individual borrowings were aggregated into user-specific sessions. 
+Each record corresponds to a single item, while users often borrow multiple items during one library visit. 
+A session is therefore defined as all borrowings by the same user on the same calendar day. 
+Sessions were ordered chronologically per user and assigned a session index, which serves as a proxy for increasing experience. 
+Session-level indicators were derived by aggregation. A session was marked as late if any item was returned after the due date and as extended if any item received a loan extension. This session-based representation forms the common basis for all subsequent analyses.
 
-\subsubsection{late and learning rate}
-Third, we analyze the frequency of late returns and how users adapt their borrowing behavior over time. The late return rate is calculated as the proportion of borrowings returned after the due date. Additionally, we assess whether users learn from their past late returns by examining changes in their borrowing durations in subsequent transactions. This involves tracking individual users' borrowing histories and analyzing trends in their return behaviors over time. For these analyses borrowing entries where grouped in sessions, defined as sequence of borrowings by the same user performed within 24 hours. If a medium from one session is returned late, the whole session is considered late. This approach captures the idea that users may adjust their behavior based on their overall experience during a visit, rather than on individual items alone.
-Also the number of extentions is analyzed in relation to late returns.
+Based on this representation, temporal usage patterns and visit regularity were quantified using borrowing timestamps. 
+Borrowing events were aggregated by weekday and hour, and the number of active users was computed in hourly bins to summarize population-level usage. 
+Individual visit regularity was measured by defining a typical borrowing time for each user as the modal weekday and hour across their borrowing history. 
+Each event was labeled according to whether it matched this typical time. Aggregating this indicator across users yields a population-level measure of regularity.
+
+Behavioral adaptation over time was analyzed using the session index as a measure of user experience. 
+For each experience level $k$, we computed the proportion of late sessions and sessions with extensions across all users who reached at least $k$ sessions. 
+This ensures that each user contributes at most one observation per level. Let $L_{u,k}$ denote whether the $k$-th session of user $u$ contains at least one late item. 
+The late-return learning curve is
+\[
+\hat{p}_{L}(k) = \frac{1}{|U_k|} \sum_{u \in U_k} L_{u,k},
+\]
+where $U_k$ denotes the set of users with at least $k$ sessions. Extensions were computed analogously.
+
+Uncertainty was estimated using user-level bootstrap resampling. 
+Because observations are dependent within users and the sampling distribution of $\hat{p}_L(k)$ is unknown, parametric methods are inappropriate. 
+Users were therefore resampled with replacement, session sequences were reconstructed, and learning curves recomputed for each bootstrap sample. 
+Confidence intervals were obtained from the resulting empirical distributions \cite{Davison_Hinkley_1997}.
