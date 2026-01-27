@@ -24,27 +24,18 @@ This study investigates the borrowing behavior of users at the Tübingen City Li
 Domain knowledge was gathered through a personal interview with a staff member of the Tübingen City Library, providing contextual insights into the data collection processes, library operations, and data quality practices. Additional information was obtained through ongoing email communication with the library staff, which helped to clarify data inconsistencies and provide domain expertise for informed analysis decisions.
 
 \subsection{Data Quality Assessment: Sanity Checks}
-Prior to conducting any analysis, a comprehensive set of data quality checks was performed to validate internal consistency and identify potential data quality issues. These sanity checks were designed to detect anomalies without filtering or removing data at first, and gather information, regarding cleaning the data to ensure robust analysis afterwards. The following specific checks were implemented:
-
-\subsubsection{Missing Values}
-First of all, the overall of missing values in the dataset was assessed. The proportion of missing values in each column was calculated to identify any fields with significant gaps that could impact the analysis. Depending on the extent and nature of the missing valus, they were excluded from certain analyses.
-Return timestamps are missing in roughly two percent of rows, which is expected for currently borrowed and unreturned or lost items and therefore retained. The same rate applies to the derived duration column because it depends on return timestamps. A missing rate of about 6.7\% was found in the user ID colum, which will be handled accordingly in the analysis. All other colums, which are relevant for our analyses, have a missing rate below 0.1\% and are therefore considered complete.
-
-\subsubsection{Timestamp and Duration Consistency}
-The integrity of temporal data was verified by identifying logical inconsistencies, such as instances where return dates preceded borrowing dates. These checks are critical since all downstream analyses depend on accurate temporal information. Further checks on the duration value revealed that it is calculated correctly from the timestamps and does not contain any inconsistencies.
-
-\subsubsection{Late Return Consistency}
-The consistency between late return flags and the reported number of days late was validated. No Entries were identified where the late flag indicated ``not late'' but the days-late counter was positive, and conversely, records marked as late but with zero or missing days-late values. Additionally, implausible values in the extensions column (negative extensions or more than six extensions) were checked. There are a few cases where the number of extensions is higher than six, which should not be possible according to the library's policies. But because of the low number of affected rows (0.003\%), these where not further investigated.
-
-\subsubsection{Duplicate Analysis}
-Various forms of duplicates were examined. There are no exact duplicates in the dataset. However, some entries show the the exact same borrowing timestamp. These can be explained by the fact, that users can borrow at multiple stations at the same time. Also it is possible for user to borrow multiple items in one transaction, resulting in identical borrowing timestamps for different items, but all these occurrences limit to the same user ID and to a maximum of seven items/entries per transaction. Only one case was found where a different user borrowed and returned at the exact same times, which is considered a rare but possible event and therefore retained.
+Proir to conducting any analysis, a comprehensive set of data quality checks were preformed to validate internal consistency and identify potential data quality issues. The following checks were implemented:
+\textbf{Missing Values:} The proportion of missing values was assessed for each column. Retrun timestamps were missing in apporximately 2\% of rows, which is expected for currently borrowed items and therefore retained. User IDs showed a missing rate of 6.7\%, which was handled accordingly in subsequent analyses. All other relevant columns had such low missing rates, that they were considered negligible. 
+\textbf{Temporal Consistency:} The integrity of temporal data was verified by checking for logical inconsistencies, such as rerurn dates preceding borrowing dates and a correct calculation of duration values from the timestamps. 
+\textbf{Late Return Consistency:} The consistency between late return flags and the number of days late was validated. Additionally, implausible values in the extensions column were checked, only a few cases with more than six extentions were identified (0.003\% of rows), which  but were not further investugated due to their negligible impact.
+\textbf{Dublicate Analysis:} Various forms of duplicates were examined. No exact duplicates were found, but identical borrowing timestamps occurred when useres borrowed multiple items in one transaction, limited to the same user ID and a maximum of seven items per transaction. These were retained as they represent valid borrowing behavior.
 
 \subsection{Data cleaning}
 Based on the result of the data quality assessment and the analysis approach defined above, the data was cleaned, based on four main rules:
 \begin{itemize}
     \item Entries with missing retuern timestamps were retained, as they represent currently borrowed or lost items.
     \item Entries with a borrowing time longer than the 196 days were removed, because they extend the maximum borrowing period of 28 days and six extentions, which are considered implausible.
-    \item Borrowings taken by users with the user type MDA and SYS were removed, because these represent borrowings from the library`s staff members and system entries, which do not reflect typical user behavior.
+    \item Borrowings taken by library`s staff members and system entries, which do not reflect typical user behavior, were removed based on their user category.
     \item For some analyses, all media types exept for books were removed, because they have different borrowing duration limits and would distort the results.
 \end{itemize}
 These cleaning steps ensured that the dataset used for analysis was both reliable and relevant, thereby enhancing the validity of the findings.
