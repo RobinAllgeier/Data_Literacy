@@ -18,5 +18,7 @@ def setup_plotting():
     plt.rcParams["text.usetex"] = False
 
     # Define a custom color cycle (TU red)
-    #plt.rcParams["axes.prop_cycle"] = cycler(color=["#a51e36"])
-    plt.rcParams.update(cycler.cycler(color=palettes.tue_plot))
+    plt.rcParams["axes.prop_cycle"] = cycler(color=["#a51e36"])
+
+    # optional plotting cycler from tue_plot
+    #plt.rcParams.update(cycler.cycler(color=palettes.tue_plot))
