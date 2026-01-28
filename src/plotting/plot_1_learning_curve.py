@@ -93,8 +93,8 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     fig, ax1 = plt.subplots()
 
     # TU colors
-    c_late = rgb.tue_blue
-    c_ext = rgb.pn_orange
+    c_late = rgb.pn_orange
+    c_ext = rgb.tue_blue
 
     ax1.fill_between(x, lower, upper, alpha=0.12, linewidth=0, color=c_late)
     ax1.plot(x, late_raw, alpha=0.20, linewidth=1, color=c_late)

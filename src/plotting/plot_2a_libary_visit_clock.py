@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from tueplots import bundles
+from tueplots.constants.color import rgb
 
 from src.plotting.style import apply_style
 from src.config import ISSUE_COL, USER_ID_COL
@@ -65,7 +66,7 @@ def _unwrap_theta_edges(theta_edges: np.ndarray) -> np.ndarray:
 
 def make_plot(df: pd.DataFrame, outpath) -> None:
     apply_style()
-    #plt.rcParams.update(bundles.icml2024(column="full", nrows=1, ncols=1))
+    #plt.rcParams.update(bundles.icml2024(column="half", nrows=1, ncols=1))
 
     outpath = Path(outpath) if outpath is not None else None
     t0 = time.perf_counter()
@@ -138,12 +139,14 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     # -----------------------------
     # Plot
     # -----------------------------
-    fig = plt.figure(constrained_layout=True)
+    figwidth = plt.rcParams.get("figure.figsize")[0]  # halbe Breite von tueplots
+    fig = plt.figure(figsize=(figwidth, figwidth))     # quadratisch
     ax = fig.add_subplot(1, 1, 1, projection="polar")
 
     ax.set_title("Avg. users per day (30-min bins)")
     ax.set_theta_zero_location("N")
     ax.set_theta_direction(-1)
+    ax.set_rlabel_position(0)
 
     # --- filled half-hour "bars" (sectors) from center to value ---
     # Draw Tue–Fri first, then Saturday with transparent orange on top
@@ -154,11 +157,12 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
         width=theta_widths,
         bottom=0.0,
         align="edge",
-        color="tab:orange",
+        color=rgb.pn_orange,
         alpha=1.0,
-        edgecolor="tab:orange",
+        edgecolor=rgb.pn_orange,
         linewidth=0.5,
         zorder=1,
+        label="Saturday"
     )
     
     ax.bar(
@@ -167,11 +171,12 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
         width=theta_widths,
         bottom=0.0,
         align="edge",
-        color="tab:blue",
+        color=rgb.tue_blue,
         alpha=1.0,
-        edgecolor="tab:blue",
+        edgecolor=rgb.tue_blue,
         linewidth=0.5,
         zorder=1.1,
+        label="Tue–Fri"
     )
 
     r_max = float(max(np.max(tue_fri), np.max(sat), 1.0))
@@ -224,9 +229,9 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     ax.set_xticks(tick_theta)
     ax.set_xticklabels(tick_labels)
 
-    ax.legend(loc="upper right", bbox_to_anchor=(1.25, 1.10), frameon=False)
+    ax.legend(loc="upper right", bbox_to_anchor=(1.15, 1.08), frameon=False)
     ax.text(
-        0.5, -0.16,
+        0.5, -0.12,
         "Grey rings: closed times (outer = Sat, inner = Tue–Fri)\n"
         "Clock angles are nonlinearly scaled to compress 20:00–09:00.",
         transform=ax.transAxes,
