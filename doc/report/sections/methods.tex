@@ -62,11 +62,12 @@ A low entropy indicates a high concentration of visits at a few recurring times 
 To validate whether the observed patterns actually indicate user-specific preferences, a permutation test was performed against a global null model in which the timestamps were randomly distributed across the entire user base.
 
 % The following part will probably be in the results section with a plot if it remains in the paper.
-Although such a test is expected to yield low p-values due to human time structures and opening hours, as hardly any user distributes their visits stochastically over the entire week, the comparison of the distributions (for users with $N \geq 10$ visits) provides valuable insights. 
-The observed distribution of entropy is significantly shifted to the left compared to the randomized baseline. 
-This not only confirms the existence of general routines, but also identifies a significant group of users whose entropy is below the 1\% percentile of the random distribution. 
-A generalizable statement about the entire user base must be made with caution due to the structural bias of the data set.
-However, it appears that a certain group of “habitual users” can be isolated.
+Although low p-values are expected due to general human time structures and opening hours, the comparison of entropy distributions remains informative.
+For users with at least $N \geq 10$ visits, the observed entropy distribution is clearly shifted towards lower values compared to the randomized baseline.
+In particular, a subset of users falls into the extreme lower tail of the null distribution, with entropy values below the 1st percentile.
+This percentile-based threshold is not meant as a formal significance criterion, but rather as a rough reference point for distinguishing highly regular, habitual users whose temporal visit patterns strongly deviate from the null model.
+Due to structural biases in the dataset, these findings should not be generalized to the entire user population.
+Nevertheless, the results suggest that a distinct group of habitual users can be identified.
 
 
 Behavioral adaptation over time was analyzed using the session index as a measure of user experience. 
