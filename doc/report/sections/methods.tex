@@ -52,25 +52,6 @@ A session is therefore defined as all borrowings by the same user on the same ca
 Sessions were ordered chronologically per user and assigned a session index, which serves as a proxy for increasing experience.
 Session-level indicators were derived by aggregation. A session was marked as late if any item was returned after the due date and as extended if any item received a loan extension. This session-based representation forms the common basis for all subsequent analyses.
 
-% Based on this representation, temporal usage patterns and visit regularity were quantified using borrowing timestamps.
-% Borrowing events were aggregated by weekday and hour, and the number of active users was computed in hourly bins to summarize population-level usage.
-% Individual visit regularity was measured by defining a typical borrowing time for each user as the modal weekday and hour across their borrowing history.
-% Each event was labeled according to whether it matched this typical time. Aggregating this indicator across users yields a population-level measure of regularity.
-
-Based on this representation, temporal usage patterns and the individual regularity of visits were quantified.
-As a measure of the predictability of visit behavior, Shannon entropy $H$ per user was calculated across the dimensions of weekday and hour of day:
-$$H(U) = -\sum_{i=1}^{n} p_i \log(p_i)$$
-In this context, $p_i$ represents the relative frequency of visits by a user $U$ in a specific time window $i$.
-A low entropy indicates a high concentration of visits at a few recurring times and thus a strong temporal routine.
-To validate whether the observed patterns actually indicate user-specific preferences, a permutation test was performed against a global null model in which the timestamps were randomly distributed across the entire user base.
-
-% The following part will probably be in the results section with a plot if it remains in the paper.
-Although low p-values are expected due to general human time structures and opening hours, the comparison of entropy distributions remains informative.
-For users with at least $N \geq 10$ visits, the observed entropy distribution is clearly shifted towards lower values compared to the randomized baseline.
-In particular, a subset of users falls into the extreme lower tail of the null distribution, with entropy values below the 1st percentile.
-This percentile-based threshold is not meant as a formal significance criterion, but rather as a rough reference point for distinguishing highly regular, habitual users whose temporal visit patterns strongly deviate from the null model.
-Due to structural biases in the dataset, these findings should not be generalized to the entire user population.
-Nevertheless, the results suggest that a distinct group of habitual users can be identified.
 
 
 Behavioral adaptation over time was analyzed using the session index as a measure of user experience.
