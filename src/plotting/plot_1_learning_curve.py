@@ -26,7 +26,9 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     outpath = Path(outpath) if outpath is not None else None
     t0 = time.perf_counter()
 
+    # --------------------------------------------------
     # Data (one row per user-session)
+    # --------------------------------------------------
     df_plot = df[df[SESSION_INDEX_COL].between(1, MAX_SESSION_INDEX_PLOT)].copy()
     x = np.arange(1, MAX_SESSION_INDEX_PLOT + 1)
 
@@ -36,76 +38,101 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
         .drop_duplicates(subset=[USER_ID_COL, SESSION_INDEX_COL])
     )
 
-    # Late curve (raw + smoothed)
+    # --------------------------------------------------
+    # Raw per-session estimators
+    # --------------------------------------------------
     late_raw = (
         df_sessions
         .groupby(SESSION_INDEX_COL)[SESSION_LATE_FLAG_COL]
         .mean()
         .reindex(x)
     )
-    late_smooth = late_raw.rolling(
-        window=LEARNING_CURVE_SMOOTHING,
-        center=True,
-        min_periods=1
-    ).mean()
-
-    # Bootstrap CI (user-level)
-    N_BOOT = 300
-    ALPHA = 0.05
-    rng = np.random.default_rng(42)
-
-    df_us = (
-        df_sessions
-        .groupby([USER_ID_COL, SESSION_INDEX_COL])[SESSION_LATE_FLAG_COL]
-        .mean()
-        .unstack(SESSION_INDEX_COL)
-        .reindex(columns=x)
-    )
-    mat = df_us.to_numpy()
-    U = mat.shape[0]
-
-    boot = np.full((N_BOOT, len(x)), np.nan)
-    for b in range(N_BOOT):
-        idx = rng.integers(0, U, size=U)
-        boot[b] = np.nanmean(mat[idx], axis=0)
-
-    lower = np.nanquantile(boot, ALPHA / 2, axis=0)
-    upper = np.nanquantile(boot, 1 - ALPHA / 2, axis=0)
-
-    # Extension curve (smoothed)
     ext_raw = (
         df_sessions
         .groupby(SESSION_INDEX_COL)[SESSION_EXTENSION_FLAG_COL]
         .mean()
         .reindex(x)
     )
+
+    # Smoothed curves (main signal)
+    late_smooth = late_raw.rolling(
+        window=LEARNING_CURVE_SMOOTHING,
+        center=True,
+        min_periods=1
+    ).mean()
     ext_smooth = ext_raw.rolling(
         window=LEARNING_CURVE_SMOOTHING,
         center=True,
         min_periods=1
     ).mean()
 
-    # Global averages (reference markers)
-    global_late = float(df_sessions[SESSION_LATE_FLAG_COL].mean())
-    global_ext = float(df_sessions[SESSION_EXTENSION_FLAG_COL].mean())
+    # --------------------------------------------------
+    # Bootstrap CI (user-level)
+    # --------------------------------------------------
+    N_BOOT = 300
+    ALPHA = 0.05
+    rng = np.random.default_rng(42)
 
+    df_us_late = (
+        df_sessions
+        .groupby([USER_ID_COL, SESSION_INDEX_COL])[SESSION_LATE_FLAG_COL]
+        .mean()
+        .unstack(SESSION_INDEX_COL)
+        .reindex(columns=x)
+    )
+    df_us_ext = (
+        df_sessions
+        .groupby([USER_ID_COL, SESSION_INDEX_COL])[SESSION_EXTENSION_FLAG_COL]
+        .mean()
+        .unstack(SESSION_INDEX_COL)
+        .reindex(columns=x)
+    )
+
+    mat_late = df_us_late.to_numpy()
+    mat_ext = df_us_ext.to_numpy()
+    U = mat_late.shape[0]
+
+    boot_late = np.full((N_BOOT, len(x)), np.nan)
+    boot_ext = np.full((N_BOOT, len(x)), np.nan)
+
+    for b in range(N_BOOT):
+        idx = rng.integers(0, U, size=U)
+        boot_late[b] = np.nanmean(mat_late[idx], axis=0)
+        boot_ext[b] = np.nanmean(mat_ext[idx], axis=0)
+
+    late_lower = np.nanquantile(boot_late, ALPHA / 2, axis=0)
+    late_upper = np.nanquantile(boot_late, 1 - ALPHA / 2, axis=0)
+    ext_lower = np.nanquantile(boot_ext, ALPHA / 2, axis=0)
+    ext_upper = np.nanquantile(boot_ext, 1 - ALPHA / 2, axis=0)
+
+    # --------------------------------------------------
     # Plot
+    # --------------------------------------------------
     fig, ax1 = plt.subplots()
 
-    # TU colors
     c_late = rgb.pn_orange
     c_ext = rgb.tue_blue
 
-    ax1.fill_between(x, lower, upper, alpha=0.12, linewidth=0, color=c_late)
-    ax1.plot(x, late_raw, alpha=0.20, linewidth=1, color=c_late)
+    # --- Late-return ---
+    ax1.fill_between(x, late_lower, late_upper, alpha=0.10, linewidth=0, color=c_late, zorder=1)
 
+    # background: raw
     ax1.plot(
-        x,
-        late_smooth,
-        linewidth=1.4,
-        marker="o",
-        markersize=2,
+        x, late_raw,
+        linewidth=0.8,
+        alpha=0.18,
         color=c_late,
+        zorder=2,
+    )
+
+    # foreground: smoothed
+    ax1.plot(
+        x, late_smooth,
+        linewidth=1.3,
+        marker="o",
+        markersize=2.0,
+        color=c_late,
+        zorder=3,
     )
 
     ax1.set_xlabel("User session index")
@@ -117,21 +144,32 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     ax1.grid(axis="x", which="major", color="0.88", linewidth=0.8)
     ax1.yaxis.set_major_formatter(PercentFormatter(xmax=1.0, decimals=0))
 
+    # --- Extension ---
     ax2 = ax1.twinx()
+    ax2.fill_between(x, ext_lower, ext_upper, alpha=0.08, linewidth=0, color=c_ext, zorder=1)
+
+    # background: raw
     ax2.plot(
-        x,
-        ext_smooth,
-        linestyle="--",
+        x, ext_raw,
+        linewidth=0.8,
+        alpha=0.18,
+        color=c_ext,
+        zorder=2,
+    )
+
+    # foreground: smoothed
+    ax2.plot(
+        x, ext_smooth,
         linewidth=1.3,
         marker="o",
-        markersize=2,
+        markersize=2.0,
         color=c_ext,
+        zorder=3,
     )
+
     ax2.set_ylabel("Extension probability")
     ax2.yaxis.set_major_formatter(PercentFormatter(xmax=1.0, decimals=0))
 
-
-    # Tight horizontal spacing
     ax1.set_xlim(1, MAX_SESSION_INDEX_PLOT)
     ax1.margins(x=0)
 
