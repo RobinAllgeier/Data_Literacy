@@ -63,6 +63,55 @@ def _unwrap_theta_edges(theta_edges: np.ndarray) -> np.ndarray:
     te_u = te_u * (2 * np.pi / te_u[-1])  # scale to exactly one turn
     return te_u
 
+def bar_with_cap(ax, theta_starts, heights, widths, base_rgb, *,
+                 bottom=None, fill_alpha=0.35, cap_frac=0.01,
+                 zorder=1.0, label=None):
+    """
+    Draw polar bars with transparent fill + opaque cap at the top.
+    Supports a per-bin 'bottom' (array-like) to stack / cut-out radially.
+    """
+    heights = np.asarray(heights, dtype=float)
+    if bottom is None:
+        bottom = np.zeros_like(heights)
+    else:
+        bottom = np.asarray(bottom, dtype=float)
+
+    # transparent fill
+    ax.bar(
+        theta_starts,
+        heights,
+        width=widths,
+        bottom=bottom,
+        align="edge",
+        color=(*base_rgb, fill_alpha),
+        edgecolor="none",
+        linewidth=0.0,
+        zorder=zorder,
+        label=label,
+    )
+
+    # opaque cap (only where height > 0)
+    cap_h = cap_frac * ax.get_rmax()
+    cap_h = max(cap_h, 1e-9)
+
+    cap = np.minimum(heights, cap_h)
+    cap_bottom = bottom + (heights - cap)
+
+    mask = heights > 0
+    ax.bar(
+        np.asarray(theta_starts)[mask],
+        np.asarray(cap)[mask],
+        width=np.asarray(widths)[mask],
+        bottom=np.asarray(cap_bottom)[mask],
+        align="edge",
+        color=(*base_rgb, 1.0),
+        edgecolor="none",
+        linewidth=0.0,
+        zorder=zorder + 0.05,
+    )
+
+
+
 
 def make_plot(df: pd.DataFrame, outpath) -> None:
     apply_style()
@@ -82,6 +131,21 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     df_plot["weekday"] = df_plot[ISSUE_COL].dt.weekday  # Mon=0..Sun=6
     df_plot["date"] = df_plot[ISSUE_COL].dt.floor("D")
     df_plot["minute_of_day"] = df_plot[ISSUE_COL].dt.hour * 60 + df_plot[ISSUE_COL].dt.minute
+    OPEN = 10 * 60 + 30      # 10:30
+    CLOSE_TUE_FRI = 19 * 60  # 19:00
+    CLOSE_SAT = 14 * 60      # 14:00
+
+    m = df_plot["minute_of_day"]
+    wd = df_plot["weekday"]  # Mon=0..Sun=6
+
+    # Tue–Fri: 10:30–19:00
+    keep_tue_fri = wd.between(1, 4) & (m >= OPEN) & (m < CLOSE_TUE_FRI)
+
+    # Saturday: 10:30–14:00
+    keep_sat = (wd == 5) & (m >= OPEN) & (m < CLOSE_SAT)
+
+    df_plot = df_plot[keep_tue_fri | keep_sat].copy()
+
     df_plot["bin_30m"] = (df_plot["minute_of_day"] // 30).astype(int)  # 0..47
 
     daily_bin_users = (
@@ -143,44 +207,68 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     fig = plt.figure(figsize=(figwidth, figwidth))     # quadratisch
     ax = fig.add_subplot(1, 1, 1, projection="polar")
 
-    ax.set_title("Avg. users per day (30-min bins)")
+    ax.set_title("Average Library Usage by Time of Day")
     ax.set_theta_zero_location("N")
     ax.set_theta_direction(-1)
     ax.set_rlabel_position(0)
 
+    r_max = float(max(np.max(tue_fri), np.max(sat), 1.0))
+    ax.set_rlim(0, r_max * 1.15)
+
+    # Cut out only the overlapping *part* (radially):
+    # Saturday is shown only where it exceeds Tue–Fri, and only above Tue–Fri.
+    sat_above = np.maximum(0.0, sat - tue_fri)
+    sat_bottom = np.minimum(sat, tue_fri)  # start Saturday where Tue–Fri ends
+
+    
+    # Saturday: only the part ABOVE Tue–Fri, starting at Tue–Fri height
+    bar_with_cap(
+        ax, theta_starts, sat_above, theta_widths, rgb.pn_orange,
+        bottom=sat_bottom,
+        fill_alpha=0.20, cap_frac=0.02, zorder=1.0, label="Saturday"
+    )
+
+    # Tue–Fri: normal from zero, on top
+    bar_with_cap(
+        ax, theta_starts, tue_fri, theta_widths, rgb.tue_blue,
+        bottom=None,
+        fill_alpha=0.30, cap_frac=0.02, zorder=1.2, label="Tue–Fri"
+    )
+
+
     # --- filled half-hour "bars" (sectors) from center to value ---
     # Draw Tue–Fri first, then Saturday with transparent orange on top
     # Use matching edgecolor to avoid gaps between bars
-    ax.bar(
-        theta_starts,
-        sat,
-        width=theta_widths,
-        bottom=0.0,
-        align="edge",
-        color=rgb.pn_orange,
-        alpha=1.0,
-        edgecolor=rgb.pn_orange,
-        linewidth=0.5,
-        zorder=1,
-        label="Saturday"
-    )
+    # ax.bar(
+    #     theta_starts,
+    #     sat,
+    #     width=theta_widths,
+    #     bottom=0.0,
+    #     align="edge",
+    #     color=rgb.pn_orange,
+    #     alpha=1.0,
+    #     edgecolor=rgb.pn_orange,
+    #     linewidth=0.5,
+    #     zorder=1,
+    #     label="Saturday"
+    # )
     
-    ax.bar(
-        theta_starts,
-        tue_fri,
-        width=theta_widths,
-        bottom=0.0,
-        align="edge",
-        color=rgb.tue_blue,
-        alpha=1.0,
-        edgecolor=rgb.tue_blue,
-        linewidth=0.5,
-        zorder=1.1,
-        label="Tue–Fri"
-    )
+    # ax.bar(
+    #     theta_starts,
+    #     tue_fri,
+    #     width=theta_widths,
+    #     bottom=0.0,
+    #     align="edge",
+    #     color=rgb.tue_blue,
+    #     alpha=1.0,
+    #     edgecolor=rgb.tue_blue,
+    #     linewidth=0.5,
+    #     zorder=1.1,
+    #     label="Tue–Fri"
+    # )
 
-    r_max = float(max(np.max(tue_fri), np.max(sat), 1.0))
-    ax.set_rlim(0, r_max * 1.15)
+    # r_max = float(max(np.max(tue_fri), np.max(sat), 1.0))
+    # ax.set_rlim(0, r_max * 1.15)
 
     # Grey rings for CLOSED times (outer = Sat, inner = Tue–Fri)
     # Group consecutive closed bins to avoid gaps
@@ -229,14 +317,14 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     ax.set_xticks(tick_theta)
     ax.set_xticklabels(tick_labels)
 
-    ax.legend(loc="upper right", bbox_to_anchor=(1.15, 1.08), frameon=False)
-    ax.text(
-        0.5, -0.12,
-        "Grey rings: closed times (outer = Sat, inner = Tue–Fri)\n"
-        "Clock angles are nonlinearly scaled to compress 20:00–09:00.",
-        transform=ax.transAxes,
-        ha="center", va="top",
-    )
+    #ax.legend(loc="upper right", bbox_to_anchor=(1.15, 1.08), frameon=False)
+    # ax.text(
+    #     0.5, -0.12,
+    #     "Grey rings: closed times (outer = Sat, inner = Tue–Fri)\n"
+    #     "Clock angles are nonlinearly scaled to compress 20:00–09:00.",
+    #     transform=ax.transAxes,
+    #     ha="center", va="top",
+    # )
 
     if outpath is not None:
         outpath.parent.mkdir(parents=True, exist_ok=True)

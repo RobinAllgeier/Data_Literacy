@@ -86,9 +86,9 @@ def main() -> None:
     # --------------------------------------------------
     cfg.figures_out_dir.mkdir(parents=True, exist_ok=True)
     #plot1(df_feat, cfg.figures_out_dir / "plot_1_learning_curve.pdf")
-    #plot2a(df_feat, cfg.figures_out_dir / "plot_2_library_visit_regularities.pdf")
+    plot2a(df_feat, cfg.figures_out_dir / "plot_2_library_visit_regularities.pdf")
     #plot2b(df_feat, cfg.figures_out_dir / "plot_2b_user_regularity_vs_random.pdf")
-    plot2c(df_feat, cfg.figures_out_dir / "plot_2c_user_regularity.pdf")
+    #plot2c(df_feat, cfg.figures_out_dir / "plot_2c_user_regularity.pdf")
 
 if __name__ == "__main__":
     main()
