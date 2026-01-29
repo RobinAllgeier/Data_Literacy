@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from tueplots.constants.color import rgb
 
 from src.config import (
     USER_ID_COL,
@@ -96,7 +97,7 @@ def make_plot(df: pd.DataFrame, outpath=None) -> None:
 
         entropy_rand = user_entropy_from_weekday_hour(df_rand)
         all_perm_entropies.extend(entropy_rand.values) 
-        ax.hist(entropy_rand.values, bins=bins, alpha=0.05, color='tab:orange', label="Randomized" if i == 0 else "")
+        ax.hist(entropy_rand.values, bins=bins, alpha=0.05, color=rgb.pn_orange, label="Randomized" if i == 0 else "")
 
     p01_threshold = np.percentile(all_perm_entropies, 1)
     ax.axvline(p01_threshold, color='red', linestyle='--', linewidth=1.5, label='1\% Percentile')
