@@ -4,7 +4,7 @@
 
 % This is the template for a figure from the original ICML submission pack. In lecture 10 we will discuss plotting in detail.
 % Refer to this lecture on how to include figures in this text.
-% 
+%
 % \begin{figure}[ht]
 % \vskip 0.2in
 % \begin{center}
@@ -24,41 +24,44 @@ This study investigates the borrowing behavior of users at the Tübingen City Li
 Domain knowledge was gathered through a personal interview with a staff member of the Tübingen City Library, providing contextual insights into the data collection processes, library operations, and data quality practices. Additional information was obtained through ongoing email communication with the library staff, which helped to clarify data inconsistencies and provide domain expertise for informed analysis decisions.
 
 \subsection{Data Quality Assessment: Sanity Checks}
-Proir to conducting any analysis, a comprehensive set of data quality checks were preformed to validate internal consistency and identify potential data quality issues. The following checks were implemented:
-\textbf{Missing Values:} The proportion of missing values was assessed for each column. Retrun timestamps were missing in apporximately 2\% of rows, which is expected for currently borrowed or lost items and therefore retained. User IDs showed a missing rate of 6.7\%, which was handled accordingly in subsequent analyses. All other relevant columns had such low missing rates, that they were considered negligible. 
-\textbf{Temporal Consistency:} The integrity of temporal data was verified by checking for logical inconsistencies, such as rerurn dates preceding borrowing dates and a correct calculation of duration values from the timestamps. 
+Prior to conducting any analysis, a comprehensive set of data quality checks were preformed to validate internal consistency and identify potential data quality issues. The following checks were implemented:
+\textbf{Missing Values:} The proportion of missing values was assessed for each column. Retrun timestamps were missing in apporximately 2\% of rows, which is expected for currently borrowed or lost items and therefore retained. User IDs showed a missing rate of 6.7\%, which was handled accordingly in subsequent analyses. All other relevant columns had such low missing rates, that they were considered negligible.
+\textbf{Temporal Consistency:} The integrity of temporal data was verified by checking for logical inconsistencies, such as rerurn dates preceding borrowing dates and a correct calculation of duration values from the timestamps.
 \textbf{Late Return Consistency:} The consistency between late return flags and the number of days late was validated. Additionally, implausible values in the extensions column were checked. Only a few cases with more than six extentions were identified (0.003\%), which  but were not further investugated due to their negligible impact.
-\textbf{Dublicate Analysis:} Various forms of duplicates were examined. No exact duplicates were found, but identical borrowing timestamps occurred when useres borrowed multiple items in one transaction, with a maximum of seven items per transaction. These were retained as they represent valid borrowing behavior.
+\textbf{Duplicate Analysis:} Various forms of duplicates were examined. No exact duplicates were found, but identical borrowing timestamps occurred when useres borrowed multiple items in one transaction, with a maximum of seven items per transaction. These were retained as they represent valid borrowing behavior.
 
 \subsection{Data cleaning}
 Based on the result of the data quality assessment, the data was cleaned, based on four rules. The following entries were removed from the dataset:
 \begin{itemize}
-    \item Entries with missing retuern timestamps, as they represent currently borrowed or lost items.
+    \item Entries with missing return timestamps, as they represent currently borrowed or lost items.
     \item Entries with a borrowing time longer than the 196 days, because they extend the maximum borrowing period of 28 days and six extentions, which are considered implausible.
-    \item Borrowings taken by library`s staff members and system entries, which do not reflect typical user behavior.
-    \item For some analyses, all media types other than books, because they have different borrowing duration limits and would distort the results.
+    \item Borrowings taken by library’s staff members and system entries, which do not reflect typical user behavior.
+    \item For some analyses, only books were considered, because other media types have different borrowing duration limits and would distort the results.
+    \item For analyses comparing media types, media types with fewer than a minimum number of entries were excluded to reduce the influence of sparsely represented categories.
+
+
 \end{itemize}
 These cleaning steps ensured that the dataset used for analysis was both reliable and relevant, thereby enhancing the validity of the findings.
 
 
 \subsection{Analysis Methods}
 
-To move from item-level borrowing records to user-level behavioral analysis, individual borrowings were aggregated into user-specific sessions. 
-Each record corresponds to a single item, while users often borrow multiple items during one library visit. 
-A session is therefore defined as all borrowings by the same user on the same calendar day. 
-Sessions were ordered chronologically per user and assigned a session index, which serves as a proxy for increasing experience. 
+To move from item-level borrowing records to user-level behavioral analysis, individual borrowings were aggregated into user-specific sessions.
+Each record corresponds to a single item, while users often borrow multiple items during one library visit.
+A session is therefore defined as all borrowings by the same user on the same calendar day.
+Sessions were ordered chronologically per user and assigned a session index, which serves as a proxy for increasing experience.
 Session-level indicators were derived by aggregation. A session was marked as late if any item was returned after the due date and as extended if any item received a loan extension. This session-based representation forms the common basis for all subsequent analyses.
 
-% Based on this representation, temporal usage patterns and visit regularity were quantified using borrowing timestamps. 
-% Borrowing events were aggregated by weekday and hour, and the number of active users was computed in hourly bins to summarize population-level usage. 
-% Individual visit regularity was measured by defining a typical borrowing time for each user as the modal weekday and hour across their borrowing history. 
+% Based on this representation, temporal usage patterns and visit regularity were quantified using borrowing timestamps.
+% Borrowing events were aggregated by weekday and hour, and the number of active users was computed in hourly bins to summarize population-level usage.
+% Individual visit regularity was measured by defining a typical borrowing time for each user as the modal weekday and hour across their borrowing history.
 % Each event was labeled according to whether it matched this typical time. Aggregating this indicator across users yields a population-level measure of regularity.
 
-Based on this representation, temporal usage patterns and the individual regularity of visits were quantified. 
+Based on this representation, temporal usage patterns and the individual regularity of visits were quantified.
 As a measure of the predictability of visit behavior, Shannon entropy $H$ per user was calculated across the dimensions of weekday and hour of day:
 $$H(U) = -\sum_{i=1}^{n} p_i \log(p_i)$$
-In this context, $p_i$ represents the relative frequency of visits by a user $U$ in a specific time window $i$. 
-A low entropy indicates a high concentration of visits at a few recurring times and thus a strong temporal routine. 
+In this context, $p_i$ represents the relative frequency of visits by a user $U$ in a specific time window $i$.
+A low entropy indicates a high concentration of visits at a few recurring times and thus a strong temporal routine.
 To validate whether the observed patterns actually indicate user-specific preferences, a permutation test was performed against a global null model in which the timestamps were randomly distributed across the entire user base.
 
 % The following part will probably be in the results section with a plot if it remains in the paper.
@@ -70,16 +73,16 @@ Due to structural biases in the dataset, these findings should not be generalize
 Nevertheless, the results suggest that a distinct group of habitual users can be identified.
 
 
-Behavioral adaptation over time was analyzed using the session index as a measure of user experience. 
-For each experience level $k$, we computed the proportion of late sessions and sessions with extensions across all users who reached at least $k$ sessions. 
-This ensures that each user contributes at most one observation per level. Let $L_{u,k}$ denote whether the $k$-th session of user $u$ contains at least one late item. 
+Behavioral adaptation over time was analyzed using the session index as a measure of user experience.
+For each experience level $k$, we computed the proportion of late sessions and sessions with extensions across all users who reached at least $k$ sessions.
+This ensures that each user contributes at most one observation per level. Let $L_{u,k}$ denote whether the $k$-th session of user $u$ contains at least one late item.
 The late-return learning curve is
 \[
 \hat{p}_{L}(k) = \frac{1}{|U_k|} \sum_{u \in U_k} L_{u,k},
 \]
 where $U_k$ denotes the set of users with at least $k$ sessions. Extensions were computed analogously.
 
-Uncertainty was estimated using user-level bootstrap resampling. 
-Because observations are dependent within users and the sampling distribution of $\hat{p}_L(k)$ is unknown, parametric methods are inappropriate. 
-Users were therefore resampled with replacement, session sequences were reconstructed, and learning curves recomputed for each bootstrap sample. 
+Uncertainty was estimated using user-level bootstrap resampling.
+Because observations are dependent within users and the sampling distribution of $\hat{p}_L(k)$ is unknown, parametric methods are inappropriate.
+Users were therefore resampled with replacement, session sequences were reconstructed, and learning curves recomputed for each bootstrap sample.
 Confidence intervals were obtained from the resulting empirical distributions \cite{Davison_Hinkley_1997}.
