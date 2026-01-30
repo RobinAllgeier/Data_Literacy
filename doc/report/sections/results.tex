@@ -1,6 +1,42 @@
 \section{Results}\label{sec:results}
 
-In this section outline your results. At this point, you are just stating the outcome of your analysis. You can highlight important aspects (``we observe a significantly higher value of $x$ over $y$''), but leave interpretation and opinion to the next section. This section absoultely \emph{must} include at least two figures.
+%In this section outline your results. At this point, you are just stating the outcome of your analysis. You can highlight important aspects (``we observe a significantly higher value of $x$ over $y$''), but leave interpretation and opinion to the next section. This section absoultely \emph{must} include at least two figures.
+
+Borrowing activity at the Tübingen City Library exhibits strong temporal patterns tied to operating hours and user schedules. 
+\autoref{fig:visit-clock} displays average session counts aggregated into half-hour bins, separately for weekdays (Tuesday–Friday) and Saturdays (Monday/Sunday closed). 
+Each bin represents the mean number of sessions occurring within that time window, averaged across all recorded days.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics{figures/plot_2_library_visit_regularities.pdf}
+    \caption{
+        Average library usage by time of day on a 24-hour clock.
+        Mean session counts per time bin are shown for Tue--Fri
+        (\textcolor{TUblue}{%
+            \tikz[baseline]{%
+                \draw[fill=TUblue!25, draw=TUblue, line width=0.6pt]
+                (0,0) rectangle (0.55em,0.55em);
+            }
+        }\!)
+        and Saturday
+        (\textcolor{pn_orange}{%
+            \tikz[baseline]{%
+                \draw[fill=pn_orange!25, draw=pn_orange, line width=0.6pt]
+                (0,0) rectangle (0.55em,0.55em);
+            }
+        }\!).
+        Nighttime hours are visually compressed to reflect library closing times, which are indicated by grey radial bands.
+    }
+    \label{fig:visit-clock}
+\end{figure}
+
+Usage concentrates heavily during daytime hours, with clear peaks from late morning through afternoon. 
+Weekdays show sustained high volume from opening through early afternoon, with a noticeable dip around midday, consistent with lunch breaks. 
+Activity then rises again in the afternoon, aligning with work and school schedules. 
+Saturday exhibits a later start and more compressed activity, suggesting leisure-driven visits instead of routine use. 
+The plot reveals that library visits follow shared daily rhythms rather than uniform distribution, shaped by operational hours and typical schedules.
+
+
 
 
 
@@ -27,29 +63,7 @@ In this section outline your results. At this point, you are just stating the ou
 
 
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics{figures/plot_2_library_visit_regularities.pdf}
-    \caption{
-        Average library usage by time of day on a 24-hour clock.
-        Mean session counts per time bin are shown for Tue--Fri
-        (\textcolor{TUblue}{%
-            \tikz[baseline]{%
-                \draw[fill=TUblue!25, draw=TUblue, line width=0.6pt]
-                (0,0) rectangle (0.55em,0.55em);
-            }
-        }\!)
-        and Saturday
-        (\textcolor{pn_orange}{%
-            \tikz[baseline]{%
-                \draw[fill=pn_orange!25, draw=pn_orange, line width=0.6pt]
-                (0,0) rectangle (0.55em,0.55em);
-            }
-        }\!).
-        Nighttime hours are visually compressed to reflect library closing times, which are indicated by grey radial bands.
-    }
-    \label{fig:visit-clock}
-\end{figure}
+
 
 
 
