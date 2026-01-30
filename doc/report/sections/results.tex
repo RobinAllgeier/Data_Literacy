@@ -6,7 +6,7 @@ Borrowing activity at the Tübingen City Library exhibits strong temporal patter
 \autoref{fig:visit-clock} displays average session counts aggregated into half-hour bins, separately for weekdays (Tuesday–Friday) and Saturdays (Monday/Sunday closed). 
 Each bin represents the mean number of sessions occurring within that time window, averaged across all recorded days.
 
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \includegraphics{figures/plot_2_library_visit_regularities.pdf}
     \caption{
@@ -36,11 +36,12 @@ Activity then rises again in the afternoon, aligning with work and school schedu
 Saturday exhibits a later start and more compressed activity, suggesting leisure-driven visits instead of routine use. 
 The plot reveals that library visits follow shared daily rhythms rather than uniform distribution, shaped by operational hours and typical schedules.
 
+Beyond these temporal patterns, user behavior evolves with repeated library engagement, revealing learning effects in late returns and loan extensions.
+\autoref{fig:learning-curve} plots both probabilities against the session index, tracking users from their first visit through their 25th session. 
+Late-return probability shows a sharp decline over the first nine sessions, dropping from approximately 13\% to below 10\%, indicating rapid acquisition of library procedures such as due dates and reminder systems. 
+Beyond session 10, the curve stabilizes into a relatively flat plateau around 8–9\%, suggesting users have transitioned from active learning into stable behavioral routines.
 
-
-
-
-\begin{figure}[ht]
+\begin{figure}[H]
     \centering
     \includegraphics{figures/plot_1_learning_curve.pdf}
     \caption{
@@ -60,8 +61,10 @@ The plot reveals that library visits follow shared daily rhythms rather than uni
     \label{fig:learning-curve}
 \end{figure}
 
-
-
+Extension probability exhibits the inverse pattern, rising from approximately 50\% to over 65\% during the same experience window. 
+This increase reveals a shift in user strategy: rather than simply becoming more punctual, experienced users proactively request extensions to avoid lateness. 
+The diverging trajectories suggest that learning manifests not as perfect compliance, but as adaptive behavior within library constraints. 
+Notably, late returns never approach zero even among highly experienced users, indicating that some lateness stems from structural factors such as fixed loan limits or schedule conflicts, independent of user familiarity with procedures.
 
 
 
