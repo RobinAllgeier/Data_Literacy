@@ -90,8 +90,8 @@ def main() -> None:
     user_stats(df_feat)
     print_media_type_stats(df_feat)
     cfg.figures_out_dir.mkdir(parents=True, exist_ok=True)
-    #plot1(df_feat, cfg.figures_out_dir / "plot_1_clock_plot.pdf")
-    #plot2(df_feat, cfg.figures_out_dir / "plot_2_learning_curve.pdf")
+    plot1(df_feat, cfg.figures_out_dir / "plot_1_clock_plot.pdf")
+    plot2(df_feat, cfg.figures_out_dir / "plot_2_learning_curve.pdf")
     plot4(df_feat, cfg.figures_out_dir / "plot_4_media_type_stickiness.pdf")
 
 

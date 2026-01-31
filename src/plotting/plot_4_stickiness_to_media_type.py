@@ -28,6 +28,7 @@ def print_media_type_session_statistics(df: pd.DataFrame):
     """
     print media type specific statistics for user sessions
     """
+
     pass
 
 
