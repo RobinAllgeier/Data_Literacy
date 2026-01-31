@@ -60,6 +60,8 @@ CLOSED_DATE_COL = "schliesstag"
 # library open days: Tue–Sat (Mon..Sun: 0,1,1,1,1,1,0)
 LIB_WEEKMASK = "0111110"
 
+REMOVE_USER_CATEGORIES = {"MDA", "MZUZL", "SYS"}
+
 BASE_ALLOWED_OPEN_DAYS = 28 # base allowed open days for loan duration calculation
 MAX_EXTENSIONS_CAP = 6 # rule of the libary for max extensions
 
