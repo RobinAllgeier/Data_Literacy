@@ -90,3 +90,15 @@ def load_processed_version(processed_root: Path, version: str) -> pd.DataFrame:
 
     print(f"[io] loading processed dataset version: {version}")
     return pd.read_parquet(parquet_path)
+
+
+def load_borrowings_cleaned(path: Path) -> pd.DataFrame:
+    """
+    Load the cleaned borrowings CSV file.
+    """
+    if not path.exists():
+        raise FileNotFoundError(f"Cleaned borrowings file not found: {path}")
+
+    print(f"[io] loading cleaned borrowings: {path.name}")
+    return pd.read_csv(path, sep=";", encoding="utf-8")
+
