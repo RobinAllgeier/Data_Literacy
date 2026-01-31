@@ -21,6 +21,9 @@ from src.config import (
     USER_MODAL_WEEKDAY_COL,
     USER_MODAL_HOUR_COL,
     USER_MATCH_TYPICAL_COL,
+    PRECISE_HOUR_COL,
+    USER_AVG_HOUR_COL,
+    USER_STD_HOUR_COL,
 )
 
 
@@ -91,12 +94,31 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
             }
         )
     )
-
     df = df.merge(user_modal, on=USER_ID_COL, how="left")
 
     df[USER_MATCH_TYPICAL_COL] = (
         (df[WEEKDAY_COL] == df[USER_MODAL_WEEKDAY_COL]) &
         (df[HOUR_COL] == df[USER_MODAL_HOUR_COL])
     )
+    # precise hour (hour + minutes/60 + seconds/3600)
+    df.loc[has_user, PRECISE_HOUR_COL] = (
+        df.loc[has_user, ISSUE_COL].dt.hour + 
+        df.loc[has_user, ISSUE_COL].dt.minute / 60 +
+        df.loc[has_user, ISSUE_COL].dt.second / 3600
+    )
+
+    # per-user mean and std of precise hour
+    user_stats = (
+        df.loc[has_user, [USER_ID_COL, PRECISE_HOUR_COL]]
+        .groupby(USER_ID_COL)
+        .agg(
+            **{
+                USER_AVG_HOUR_COL:(PRECISE_HOUR_COL, "mean"),
+                USER_STD_HOUR_COL:(PRECISE_HOUR_COL, "std")
+            }
+        )
+    )
+    df = df.merge(user_stats, on=USER_ID_COL, how="left")
+
 
     return df

@@ -24,6 +24,9 @@ from src.validate import validate_borrowings
 
 from src.plotting.plot_1_libary_visit_clock import make_plot as plot1
 from src.plotting.plot_2_learning_curve import make_plot as plot2
+from src.plotting.plot_1_libary_visit_clock import print_user_statistics as user_stats
+
+
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Borrowings pipeline: raw -> processed + features")
@@ -82,10 +85,10 @@ def main() -> None:
     # --------------------------------------------------
     # PLOTS
     # --------------------------------------------------
+    user_stats(df_feat)
     cfg.figures_out_dir.mkdir(parents=True, exist_ok=True)
     plot1(df_feat, cfg.figures_out_dir / "plot_1_clock_plot.pdf")
     plot2(df_feat, cfg.figures_out_dir / "plot_2_learning_curve.pdf")
-    
 
 
 if __name__ == "__main__":

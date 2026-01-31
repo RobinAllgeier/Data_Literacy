@@ -11,8 +11,36 @@ from tueplots import bundles
 from tueplots.constants.color import rgb
 
 from src.plotting.style import apply_style
-from src.config import ISSUE_COL, USER_ID_COL
+from src.config import ISSUE_COL, USER_ID_COL, SESSION_INDEX_COL, USER_STD_HOUR_COL, WEEKDAY_COL, USER_MODAL_WEEKDAY_COL
 
+def print_user_statistics(df: pd.DataFrame):
+    """
+    Calculate time-based statistics at user level
+    """
+   
+    is_tue_to_sat = df[WEEKDAY_COL].between(1, 5)  # Tue–Sat
+    user_sessions = df.groupby(USER_ID_COL)[SESSION_INDEX_COL].max()
+    frequent_user = user_sessions[user_sessions >= 10].index        # user with at least 10 sessions
+
+    df_user = df[is_tue_to_sat & df[USER_ID_COL].isin(frequent_user)].copy()
+
+    # --- weekday preference ---
+    df_user["is_modal_day"] = (df_user[WEEKDAY_COL] == df_user[USER_MODAL_WEEKDAY_COL])
+    user_weekday_probs = df_user.groupby(USER_ID_COL)["is_modal_day"].mean()
+    weekday_prob = user_weekday_probs.mean() * 100
+
+    # --- standard deviation of the time ---
+    user_std_devs = df_user.groupby(USER_ID_COL)[USER_STD_HOUR_COL].first()
+    mean_std_dev = user_std_devs.mean()
+
+    # --- user with std < 1 ---
+    precise_users_mask = user_std_devs < 1.0
+    precise_percentage = precise_users_mask.mean() * 100
+
+    print(f"[stats] user with >= 10 sessions, n={len(frequent_user)}):")
+    print(f"  1. Mean probability of returning on the same weekday: {weekday_prob:.1f}%")
+    print(f"  2. Mean standard deviation of visit times: {mean_std_dev:.1f} hours")
+    print(f"  3. Users with high temporal precision (<1h std): {precise_percentage:.1f}%")
 
 def time_to_theta(minutes: np.ndarray) -> np.ndarray:
     """
@@ -141,7 +169,7 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     # Tue–Fri: 10:30–19:00
     keep_tue_fri = wd.between(1, 4) & (m >= OPEN) & (m < CLOSE_TUE_FRI)
 
-    # Saturday: 10:30–14:00
+    # Saturday: 10:30–14:00o
     keep_sat = (wd == 5) & (m >= OPEN) & (m < CLOSE_SAT)
 
     df_plot = df_plot[keep_tue_fri | keep_sat].copy()
