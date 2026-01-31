@@ -1,162 +1,219 @@
 from __future__ import annotations
 
 from pathlib import Path
+from tueplots.constants.color import rgb
+
 import time
 
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, PercentFormatter
+import numpy as np
 import pandas as pd
 
 from src.config import (
-    ISSUE_COL,
+    MEDIA_TYPE_COL,
     USER_ID_COL,
     ISSUE_SESSION_COL,
+    FIRST_K_THRESHOLDS,
+    MIN_USER_SESSIONS,
+    MAX_SESSION_INDEX_PLOT_4,
+    SESSION_INDEX_COL,
+    SESSION_CATEGORY_COL,
+    STICKINESS_CURVE_SMOOTHING,
 )
 from src.plotting.style import apply_style
+
+
+def print_media_type_session_statistics(df: pd.DataFrame):
+    """
+    print media type specific statistics for user sessions
+    """
+    pass
 
 
 def make_plot(
         df: pd.DataFrame,
         outpath,
-        *,
-        category_col: str = "Medientyp",
-        k_sessions_list: list[int] | None = None,
-        min_obs: int = 1000,
 ) -> None:
-    """
-    Plot: Stickiness to early dominant media type.
-
-    For each baseline window size k0 (first k0 sessions per user):
-    - determine the user's dominant media type within that baseline window
-      (most frequent dominant-per-session type across the first k0 sessions)
-    - for later sessions k >= k0+1: compute P(type(k) == dominant type in first k0 sessions)
-    - aggregate by session_index across users and plot curves.
-
-    Input df is loan-level (one row per borrowing). This function internally
-    constructs a one-row-per-user-session table using the dominant media type
-    per session (= day).
-    """
     apply_style()
     outpath = Path(outpath) if outpath is not None else None
     t0 = time.perf_counter()
 
-    if k_sessions_list is None:
-        k_sessions_list = [1, 2, 3, 5, 10, 20]
+    df_plot = df.dropna(subset=[USER_ID_COL, ISSUE_SESSION_COL, MEDIA_TYPE_COL]).copy()
 
     # --------------------------------------------------
-    # 0) Basic checks + required columns
-    # --------------------------------------------------
-    required = {USER_ID_COL, category_col}
-    missing = [c for c in required if c not in df.columns]
-    if missing:
-        raise KeyError(f"Missing required columns for this plot: {missing}")
-
-    # Ensure issue_session exists (normally created in features.py)
-    df_plot = df.copy()
-    if ISSUE_SESSION_COL not in df_plot.columns:
-        if ISSUE_COL not in df_plot.columns:
-            raise KeyError(f"Need either {ISSUE_SESSION_COL} or {ISSUE_COL} in df.")
-        df_plot[ISSUE_SESSION_COL] = pd.to_datetime(df_plot[ISSUE_COL], errors="coerce").dt.floor("D")
-
-    # Keep rows where user + session + category exist
-    df_plot = df_plot.dropna(subset=[USER_ID_COL, ISSUE_SESSION_COL, category_col]).copy()
-
-    # --------------------------------------------------
-    # 1) Build session-level dominant category per user-session
-    #    (one row per user per day/session)
+    # Build session-level dominant category per user-session
     # --------------------------------------------------
     session_media = (
-        df_plot.groupby([USER_ID_COL, ISSUE_SESSION_COL, category_col])
+        df_plot.groupby([USER_ID_COL, ISSUE_SESSION_COL, MEDIA_TYPE_COL])
         .size()
         .rename("n")
         .reset_index()
         .sort_values([USER_ID_COL, ISSUE_SESSION_COL, "n"], ascending=[True, True, False])
     )
 
-    # dominant type per (user, session)
     session_top = (
         session_media.drop_duplicates([USER_ID_COL, ISSUE_SESSION_COL])
-        .rename(columns={category_col: "session_cat"})
-        [[USER_ID_COL, ISSUE_SESSION_COL, "session_cat"]]
+        .rename(columns={MEDIA_TYPE_COL: SESSION_CATEGORY_COL})
+        [[USER_ID_COL, ISSUE_SESSION_COL, SESSION_CATEGORY_COL]]
         .sort_values([USER_ID_COL, ISSUE_SESSION_COL])
     )
 
-    # session index per user (1,2,3,...)
-    session_top["session_index"] = (
+    session_top[SESSION_INDEX_COL] = (
         session_top.groupby(USER_ID_COL)[ISSUE_SESSION_COL]
         .transform(lambda s: pd.factorize(s, sort=True)[0] + 1)
     )
 
+    session_top = session_top[session_top[SESSION_INDEX_COL] <= MAX_SESSION_INDEX_PLOT_4].copy()
+    x_all = np.arange(1, MAX_SESSION_INDEX_PLOT_4 + 1)
+
     # --------------------------------------------------
-    # 2) For each k0: baseline dominant type in first k0 sessions,
-    #    then stickiness in later sessions
+    # Curves + Bootstrap CI (user-level)
     # --------------------------------------------------
+    N_BOOT = 300
+    ALPHA = 0.05
+    rng = np.random.default_rng(42)
+
     curves: dict[int, pd.DataFrame] = {}
+    cis: dict[int, tuple[np.ndarray, np.ndarray]] = {}
 
-    for k0 in k_sessions_list:
-        base = session_top[session_top["session_index"] <= k0].copy()
+    def _bootstrap_ci(mat: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        U, K = mat.shape
+        boot = np.full((N_BOOT, K), np.nan)
+        for b in range(N_BOOT):
+            idx = rng.integers(0, U, size=U)
+            boot[b] = np.nanmean(mat[idx], axis=0)
+        lower = np.nanquantile(boot, ALPHA / 2, axis=0)
+        upper = np.nanquantile(boot, 1 - ALPHA / 2, axis=0)
+        return lower, upper
 
-        # dominant category within the baseline window per user:
-        # count how often each session_cat appears as dominant across the first k0 sessions
+    for k0 in FIRST_K_THRESHOLDS:
+        base = session_top[session_top[SESSION_INDEX_COL] <= k0].copy()
+
         type_k0 = (
-            base.groupby([USER_ID_COL, "session_cat"])
+            base.groupby([USER_ID_COL, SESSION_CATEGORY_COL])
             .size()
             .rename("n")
             .reset_index()
             .sort_values([USER_ID_COL, "n"], ascending=[True, False])
             .drop_duplicates(USER_ID_COL)
-            .set_index(USER_ID_COL)["session_cat"]
+            .set_index(USER_ID_COL)[SESSION_CATEGORY_COL]
             .rename(f"type_first_{k0}")
         )
 
         tmp = session_top.join(type_k0, on=USER_ID_COL)
 
-        col_same = f"same_as_first_{k0}"
-        tmp[col_same] = (tmp["session_cat"] == tmp[f"type_first_{k0}"])
+        tmp = tmp.dropna(subset=[f"type_first_{k0}"]).copy()
 
+        col_same = f"same_as_first_{k0}"
+        tmp[col_same] = (tmp[SESSION_CATEGORY_COL] == tmp[f"type_first_{k0}"])
+
+        # --- point estimate curve ---
         curve_k0 = (
-            tmp.groupby("session_index")[col_same]
+            tmp.groupby(SESSION_INDEX_COL)[col_same]
             .agg(rate="mean", n_obs="size")
+            .reindex(x_all)                       # ensure full index 1..MAX
             .reset_index()
+            .rename(columns={"index": SESSION_INDEX_COL})
         )
 
-        # keep only sessions after baseline window
-        curve_k0 = curve_k0[curve_k0["session_index"] >= (k0 + 1)].copy()
-        curve_k0 = curve_k0[curve_k0["n_obs"] >= min_obs].copy()
+        # keep only sessions after baseline window + enough observations
+        curve_k0 = curve_k0[curve_k0[SESSION_INDEX_COL] >= (k0 + 1)].copy()
+        curve_k0 = curve_k0[curve_k0["n_obs"] >= MIN_USER_SESSIONS].copy()
 
         curves[k0] = curve_k0
 
+        # --- bootstrap CI ---
+        user_session = (
+            tmp.groupby([USER_ID_COL, SESSION_INDEX_COL])[col_same]
+            .mean()
+            .unstack(SESSION_INDEX_COL)
+            .reindex(columns=x_all)
+        )
+
+        mat = user_session.to_numpy(dtype=float)
+        if mat.shape[0] < 2:
+            cis[k0] = (np.full_like(x_all, np.nan, dtype=float),
+                       np.full_like(x_all, np.nan, dtype=float))
+        else:
+            cis[k0] = _bootstrap_ci(mat)
+
     # --------------------------------------------------
-    # 3) Plot
+    # Plot
     # --------------------------------------------------
-    fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots()
+
+    palette = [
+        rgb.pn_orange,
+        rgb.tue_blue,
+        rgb.tue_red,
+        rgb.tue_green,
+        rgb.tue_violet,
+        rgb.tue_gray,
+    ]
 
     any_line = False
-    for k0 in k_sessions_list:
+    for i, k0 in enumerate(FIRST_K_THRESHOLDS):
         c = curves.get(k0)
         if c is None or c.empty:
             continue
         any_line = True
+
+        color = palette[i % len(palette)]
+
+        x_vals = c[SESSION_INDEX_COL].to_numpy(dtype=int)
+
+        lower, upper = cis[k0]
+        ax.fill_between(
+            x_vals,
+            lower[x_vals - 1],
+            upper[x_vals - 1],
+            alpha=0.10,
+            linewidth=0,
+            color=color,
+            zorder=1,
+        )
+
         ax.plot(
-            c["session_index"],
+            x_vals,
             c["rate"],
-            linewidth=1.6,
+            linewidth=0.8,
+            alpha=0.18,
+            color=color,
+            zorder=2,
+        )
+
+        y_smooth = pd.Series(c["rate"].to_numpy(), index=x_vals).rolling(
+            window=STICKINESS_CURVE_SMOOTHING, center=True, min_periods=1
+        ).mean()
+
+        ax.plot(
+            x_vals,
+            y_smooth.values,
+            linewidth=1.3,
+            marker="o",
+            markersize=2.0,
+            color=color,
+            zorder=3,
             label=f"baseline: first {k0} sessions",
         )
 
-    ax.set_xlabel("Session index k")
-    ax.set_ylabel("P(type(k) = dominant type in first k0 sessions)")
-    ax.set_title("Stickiness to early dominant media type (lines start at first new session)")
+    ax.set_xlabel("User session index")
+    ax.set_ylabel("Share of sessions matching early dominant media type")
+    ax.set_title("Consistency with early dominant media type")
 
-    ax.yaxis.set_major_formatter(PercentFormatter(xmax=1.0, decimals=0))
     ax.xaxis.set_major_locator(MultipleLocator(5))
     ax.xaxis.set_minor_locator(MultipleLocator(1))
     ax.grid(axis="x", which="major", color="0.88", linewidth=0.8)
+    ax.yaxis.set_major_formatter(PercentFormatter(xmax=1.0, decimals=0))
 
-    if any_line:
-        ax.legend()
+    k_min = min(FIRST_K_THRESHOLDS)
+    x_left = k_min + 1
+    ax.set_xlim(x_left, MAX_SESSION_INDEX_PLOT_4)
+    ax.margins(x=0)
 
     fig.tight_layout()
+
 
     if outpath is not None:
         outpath.parent.mkdir(parents=True, exist_ok=True)
@@ -165,4 +222,4 @@ def make_plot(
     plt.show()
     plt.close(fig)
 
-    print(f"[plot3] total time: {time.perf_counter() - t0:.2f}s")
+    print(f"[plot4] total time: {time.perf_counter() - t0:.2f}s")

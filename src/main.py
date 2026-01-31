@@ -26,6 +26,8 @@ from src.plotting.plot_1_libary_visit_clock import make_plot as plot1
 from src.plotting.plot_2_learning_curve import make_plot as plot2
 from src.plotting.plot_1_libary_visit_clock import print_user_statistics as user_stats
 from src.plotting.plot_4_stickiness_to_media_type import make_plot as plot4
+from src.plotting.plot_4_stickiness_to_media_type import print_media_type_session_statistics as print_media_type_stats
+
 
 
 def parse_args() -> argparse.Namespace:
@@ -86,10 +88,11 @@ def main() -> None:
     # PLOTS
     # --------------------------------------------------
     user_stats(df_feat)
+    print_media_type_stats(df_feat)
     cfg.figures_out_dir.mkdir(parents=True, exist_ok=True)
-    plot1(df_feat, cfg.figures_out_dir / "plot_1_clock_plot.pdf")
-    plot2(df_feat, cfg.figures_out_dir / "plot_2_learning_curve.pdf")
-    plot4(df_feat, cfg.figures_out_dir / "plot_3_media_type_stickiness.pdf")
+    #plot1(df_feat, cfg.figures_out_dir / "plot_1_clock_plot.pdf")
+    #plot2(df_feat, cfg.figures_out_dir / "plot_2_learning_curve.pdf")
+    plot4(df_feat, cfg.figures_out_dir / "plot_4_media_type_stickiness.pdf")
 
 
 if __name__ == "__main__":

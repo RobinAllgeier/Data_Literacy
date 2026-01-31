@@ -75,6 +75,7 @@ SESSION_SIZE_COL = "session_size"
 SESSION_LATE_FLAG_COL = "session_late_flag"
 SESSION_EXTENSION_FLAG_COL = "session_extension_flag"
 EXPERIENCE_STAGE_COL = "experience_stage"
+SESSION_CATEGORY_COL = "session_category"
 
 # timing features
 WEEKDAY_COL = "weekday"
@@ -85,7 +86,7 @@ USER_MODAL_WEEKDAY_COL = "user_modal_weekday"
 USER_MODAL_HOUR_COL = "user_modal_hour"
 USER_MATCH_TYPICAL_COL = "matches_typical_time"
 
-# user timing features 
+# user timing features
 PRECISE_HOUR_COL = "precise_hour"
 USER_AVG_HOUR_COL = "user_mean_hour"
 USER_STD_HOUR_COL = "user_std_hour"
@@ -100,13 +101,15 @@ EXPERIENCE_CUTOFF = 3          # early vs experienced threshold (session_index <
 MAX_SESSION_INDEX_PLOT = 25    # cap x-axis to avoid long tail dominating
 LEARNING_CURVE_SMOOTHING = 3  # moving average window size for learning curve plot
 
+# For plot 2:
 
+# For plot 3:
 
-
-
-# For plot 2: 
-
-# For plot 3: 
+# For plot 4:
+FIRST_K_THRESHOLDS = [2, 5, 10]
+MIN_USER_SESSIONS = 0
+MAX_SESSION_INDEX_PLOT_4 = 25
+STICKINESS_CURVE_SMOOTHING = 3
 
 
 
