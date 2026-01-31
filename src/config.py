@@ -106,7 +106,7 @@ LEARNING_CURVE_SMOOTHING = 3  # moving average window size for learning curve pl
 # For plot 3:
 
 # For plot 4:
-FIRST_K_THRESHOLDS = [2, 5, 10]
+FIRST_K_THRESHOLDS = [1, 5, 10]
 MIN_USER_SESSIONS = 0
 MAX_SESSION_INDEX_PLOT_4 = 25
 STICKINESS_CURVE_SMOOTHING = 3

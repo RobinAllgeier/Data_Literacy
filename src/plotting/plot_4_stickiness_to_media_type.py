@@ -24,12 +24,95 @@ from src.config import (
 from src.plotting.style import apply_style
 
 
-def print_media_type_session_statistics(df: pd.DataFrame):
+def print_media_type_session_statistics(df: pd.DataFrame) -> None:
     """
-    print media type specific statistics for user sessions
+    Print media type specific statistics for user sessions:
+    - tie-session rate (no unique dominant media type)
+    - distribution of number of distinct media types per session (1..10)
     """
+    df_s = df.dropna(subset=[USER_ID_COL, ISSUE_SESSION_COL, MEDIA_TYPE_COL]).copy()
 
-    pass
+    counts = (
+        df_s.groupby([USER_ID_COL, ISSUE_SESSION_COL, MEDIA_TYPE_COL])
+        .size()
+        .rename("n")
+        .reset_index()
+    )
+
+    # ----------------------------
+    # Overall media type distribution (loan-level)
+    # ----------------------------
+    mt = df_s[MEDIA_TYPE_COL].astype(str).str.strip()
+    dist = (
+        mt.value_counts(normalize=True, dropna=False)
+        .mul(100.0)
+        .round(2)
+        .rename("pct")
+        .reset_index()
+        .rename(columns={"index": MEDIA_TYPE_COL})
+    )
+
+    print("[plot4][stats] overall media type distribution (loan-level, %)")
+    print(dist.to_string(index=False))
+
+    # ----------------------------
+    # Tie sessions (dominant not unique)
+    # ----------------------------
+    max_per_session = (
+        counts.groupby([USER_ID_COL, ISSUE_SESSION_COL])["n"]
+        .max()
+        .rename("max_n")
+        .reset_index()
+    )
+
+    counts2 = counts.merge(max_per_session, on=[USER_ID_COL, ISSUE_SESSION_COL], how="left")
+    counts2["is_max"] = counts2["n"].eq(counts2["max_n"])
+
+    n_at_max = (
+        counts2.groupby([USER_ID_COL, ISSUE_SESSION_COL])["is_max"]
+        .sum()
+        .rename("n_tied_at_max")
+    )
+
+    n_sessions = int(n_at_max.shape[0])
+    n_tie_sessions = int((n_at_max > 1).sum())
+    tie_rate = (n_tie_sessions / n_sessions * 100.0) if n_sessions else 0.0
+
+    print(f"[plot4][stats] tie sessions: {n_tie_sessions}/{n_sessions} ({tie_rate:.2f}%)")
+
+    print("[plot4][stats] baseline tie-rate by k0 (MERGED borrowings across first k0 sessions):")
+    for k0 in FIRST_K_THRESHOLDS:
+        n_users, n_tied, tie_rate = _baseline_tie_rate_merged_borrowings(df_s, k0)
+        print(f"  k0={k0:>2}: {n_tied}/{n_users} users tied ({tie_rate:.2f}%)")
+
+# ----------------------------
+    # #distinct media types per session: P(m = 1..10)
+    # ----------------------------
+    n_types = (
+        counts.groupby([USER_ID_COL, ISSUE_SESSION_COL])[MEDIA_TYPE_COL]
+        .nunique()
+        .rename("n_media_types")
+    )
+
+    max_k = 10
+    pmf = (
+        n_types.value_counts(normalize=True)
+        .sort_index()
+    )
+
+    idx = pd.Index(range(1, max_k + 1), name="n_media_types")
+    pmf_1_10 = pmf.reindex(idx, fill_value=0.0).rename("probability").reset_index()
+
+    p_gt_10 = float(pmf[pmf.index > max_k].sum()) if (pmf.index > max_k).any() else 0.0
+
+    print("[plot4][stats] distribution: #media types per session (probability)")
+    pmf_print = pmf_1_10.copy()
+    pmf_print["probability"] = (pmf_print["probability"] * 100.0).round(2)
+    print(pmf_print.to_string(index=False))
+
+    if p_gt_10 > 0:
+        print(f"[plot4][stats] P(n_media_types > {max_k}) = {p_gt_10*100.0:.2f}%")
+
 
 
 def make_plot(
@@ -44,28 +127,9 @@ def make_plot(
 
     # --------------------------------------------------
     # Build session-level dominant category per user-session
+    # (DROP TIES: sessions without a unique dominant media type)
     # --------------------------------------------------
-    session_media = (
-        df_plot.groupby([USER_ID_COL, ISSUE_SESSION_COL, MEDIA_TYPE_COL])
-        .size()
-        .rename("n")
-        .reset_index()
-        .sort_values([USER_ID_COL, ISSUE_SESSION_COL, "n"], ascending=[True, True, False])
-    )
-
-    session_top = (
-        session_media.drop_duplicates([USER_ID_COL, ISSUE_SESSION_COL])
-        .rename(columns={MEDIA_TYPE_COL: SESSION_CATEGORY_COL})
-        [[USER_ID_COL, ISSUE_SESSION_COL, SESSION_CATEGORY_COL]]
-        .sort_values([USER_ID_COL, ISSUE_SESSION_COL])
-    )
-
-    session_top[SESSION_INDEX_COL] = (
-        session_top.groupby(USER_ID_COL)[ISSUE_SESSION_COL]
-        .transform(lambda s: pd.factorize(s, sort=True)[0] + 1)
-    )
-
-    session_top = session_top[session_top[SESSION_INDEX_COL] <= MAX_SESSION_INDEX_PLOT_4].copy()
+    session_top = _get_prepared_session_data(df_plot)
     x_all = np.arange(1, MAX_SESSION_INDEX_PLOT_4 + 1)
 
     # --------------------------------------------------
@@ -89,16 +153,22 @@ def make_plot(
         return lower, upper
 
     for k0 in FIRST_K_THRESHOLDS:
-        base = session_top[session_top[SESSION_INDEX_COL] <= k0].copy()
+        base_loans = df_plot[df_plot[SESSION_INDEX_COL] <= k0].dropna(subset=[USER_ID_COL, MEDIA_TYPE_COL]).copy()
 
-        type_k0 = (
-            base.groupby([USER_ID_COL, SESSION_CATEGORY_COL])
+        uc = (
+            base_loans.groupby([USER_ID_COL, MEDIA_TYPE_COL])
             .size()
             .rename("n")
             .reset_index()
-            .sort_values([USER_ID_COL, "n"], ascending=[True, False])
-            .drop_duplicates(USER_ID_COL)
-            .set_index(USER_ID_COL)[SESSION_CATEGORY_COL]
+        )
+
+        uc["max_n"] = uc.groupby(USER_ID_COL)["n"].transform("max")
+        uc["is_max"] = uc["n"].eq(uc["max_n"])
+        uc["n_tied_at_max"] = uc.groupby(USER_ID_COL)["is_max"].transform("sum")
+
+        type_k0 = (
+            uc[(uc["is_max"]) & (uc["n_tied_at_max"] == 1)]
+            .set_index(USER_ID_COL)[MEDIA_TYPE_COL]
             .rename(f"type_first_{k0}")
         )
 
@@ -113,12 +183,11 @@ def make_plot(
         curve_k0 = (
             tmp.groupby(SESSION_INDEX_COL)[col_same]
             .agg(rate="mean", n_obs="size")
-            .reindex(x_all)                       # ensure full index 1..MAX
+            .reindex(x_all)
             .reset_index()
             .rename(columns={"index": SESSION_INDEX_COL})
         )
 
-        # keep only sessions after baseline window + enough observations
         curve_k0 = curve_k0[curve_k0[SESSION_INDEX_COL] >= (k0 + 1)].copy()
         curve_k0 = curve_k0[curve_k0["n_obs"] >= MIN_USER_SESSIONS].copy()
 
@@ -224,3 +293,69 @@ def make_plot(
     plt.close(fig)
 
     print(f"[plot4] total time: {time.perf_counter() - t0:.2f}s")
+
+def _get_prepared_session_data(input_data: pd.DataFrame) -> pd.DataFrame:
+    # input_data ist loan-level und hat SESSION_INDEX_COL schon aus add_features
+    df_plot = input_data.dropna(subset=[USER_ID_COL, ISSUE_SESSION_COL, MEDIA_TYPE_COL, SESSION_INDEX_COL]).copy()
+
+    # session_index pro (user, session) aus dem Input übernehmen (konstant pro Session)
+    session_idx = (
+        df_plot.groupby([USER_ID_COL, ISSUE_SESSION_COL])[SESSION_INDEX_COL]
+        .first()
+        .reset_index()
+    )
+
+    # counts pro (user, session, media_type)
+    session_media = (
+        df_plot.groupby([USER_ID_COL, ISSUE_SESSION_COL, MEDIA_TYPE_COL])
+        .size()
+        .rename("n")
+        .reset_index()
+    )
+
+    # tie detection innerhalb der Session
+    session_media["n_max"] = session_media.groupby([USER_ID_COL, ISSUE_SESSION_COL])["n"].transform("max")
+    session_media["is_max"] = session_media["n"].eq(session_media["n_max"])
+    session_media["n_tied_at_max"] = session_media.groupby([USER_ID_COL, ISSUE_SESSION_COL])["is_max"].transform("sum")
+
+    dom = session_media[(session_media["is_max"]) & (session_media["n_tied_at_max"] == 1)].copy()
+
+    session_top = (
+        dom.rename(columns={MEDIA_TYPE_COL: SESSION_CATEGORY_COL})
+        [[USER_ID_COL, ISSUE_SESSION_COL, SESSION_CATEGORY_COL]]
+        .merge(session_idx, on=[USER_ID_COL, ISSUE_SESSION_COL], how="left")
+        .sort_values([USER_ID_COL, SESSION_INDEX_COL])
+    )
+
+    session_top = session_top[session_top[SESSION_INDEX_COL] <= MAX_SESSION_INDEX_PLOT_4].copy()
+    return session_top
+
+def _baseline_tie_rate_merged_borrowings(df_loans: pd.DataFrame, k0: int) -> tuple[int, int, float]:
+    df0 = df_loans.dropna(subset=[USER_ID_COL, SESSION_INDEX_COL, MEDIA_TYPE_COL]).copy()
+
+    # eligible users: have at least k0 sessions overall
+    max_sess = df0.groupby(USER_ID_COL)[SESSION_INDEX_COL].max()
+    eligible = max_sess[max_sess >= k0].index
+    n_users = int(len(eligible))
+    if n_users == 0:
+        return 0, 0, 0.0
+
+    base = df0[df0[USER_ID_COL].isin(eligible) & (df0[SESSION_INDEX_COL] <= k0)].copy()
+    if base.empty:
+        return n_users, 0, 0.0
+
+    uc = (
+        base.groupby([USER_ID_COL, MEDIA_TYPE_COL])
+        .size()
+        .rename("n")
+        .reset_index()
+    )
+
+    uc["max_n"] = uc.groupby(USER_ID_COL)["n"].transform("max")
+    uc["is_max"] = uc["n"].eq(uc["max_n"])
+    n_at_max = uc.groupby(USER_ID_COL)["is_max"].sum()
+
+    n_tied = int((n_at_max > 1).sum())
+    tie_rate = (n_tied / n_users * 100.0) if n_users else 0.0
+    return n_users, n_tied, tie_rate
+
