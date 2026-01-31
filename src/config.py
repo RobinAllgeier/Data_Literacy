@@ -85,6 +85,11 @@ USER_MODAL_WEEKDAY_COL = "user_modal_weekday"
 USER_MODAL_HOUR_COL = "user_modal_hour"
 USER_MATCH_TYPICAL_COL = "matches_typical_time"
 
+# user timing features 
+PRECISE_HOUR_COL = "precise_hour"
+USER_AVG_HOUR_COL = "user_mean_hour"
+USER_STD_HOUR_COL = "user_std_hour"
+
 
 
 
