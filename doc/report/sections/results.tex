@@ -90,11 +90,13 @@ Notably, late returns never approach zero even among highly experienced users, i
             \tikz\draw[line width=1.2pt] (0,0) -- (0.9em,0)
             node[midway, circle, fill=TUred, inner sep=1.2pt] {};
         }\!).
+        For each $k_0$, the curve starts at session $k_0+1$.
         Shaded bands denote user-level bootstrap confidence intervals,
         while thin lines show raw estimates and thicker lines rolling averages.
     }
     \label{fig:media-stickiness}
 \end{figure}
+
 
 In addition to timing and return behavior, we analyze the consistency of media-type choices over repeated sessions at the user level.
 \autoref{fig:media-stickiness} shows, for $k_0 \in \{1,5,10\}$, the share of sessions whose dominant media type matches
