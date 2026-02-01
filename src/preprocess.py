@@ -118,10 +118,7 @@ def _print_total_removed_summary(df_start: pd.DataFrame, removed_all: pd.DataFra
         print(f"  {int(year)}: {removed}/{total} ({pct:.2f}%)")
 
 
-def _remove_weird_loans_using_closed_days(
-    df: pd.DataFrame,
-    closed_days: pd.DataFrame,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
+def _remove_weird_loans_using_closed_days(df: pd.DataFrame, closed_days: pd.DataFrame,) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Flags weird loans where open business days (Tue–Sat, excluding holidays/closed days)
     exceed allowed maximum: BASE_ALLOWED_OPEN_DAYS * (1 + extensions),
@@ -212,32 +209,32 @@ def preprocess_borrowings(df: pd.DataFrame, *, closed_days: pd.DataFrame) -> pd.
     n_start = len(df)
     print(f"[preprocess] start rows: {n_start}")
 
-    # --- drop missing issue date (before parsing) ---
+    # drop missing issue date (before parsing)
     if ISSUE_COL in df.columns:
         df, removed = _drop_and_report(df, df[ISSUE_COL].isna(), f"missing {ISSUE_COL}")
         if not removed.empty:
             removed_all_steps.append(removed)
 
-    # --- parse datetimes ---
+    # parse datetimes
     df[ISSUE_COL] = pd.to_datetime(df[ISSUE_COL], errors="coerce")
     df[RETURN_COL] = pd.to_datetime(df[RETURN_COL], errors="coerce")
 
-    # --- drop invalid issue date (after parsing) ---
+    # drop invalid issue date (after parsing)
     df, removed = _drop_and_report(df, df[ISSUE_COL].isna(), f"invalid {ISSUE_COL}")
     if not removed.empty:
         removed_all_steps.append(removed)
 
-    # --- drop rows without return timestamp ---
+    # drop rows without return timestamp
     df, removed = _drop_and_report(df, df[RETURN_COL].isna(), f"missing {RETURN_COL}")
     if not removed.empty:
         removed_all_steps.append(removed)
 
-    # --- remove impossible return dates ---
+    # remove impossible return dates
     df, removed = _drop_and_report(df, df[RETURN_COL] < df[ISSUE_COL], "return before issue")
     if not removed.empty:
         removed_all_steps.append(removed)
 
-    # --- remove user categories from config ---
+    # remove user categories from config
     if USER_CATEGORY_COL in df.columns:
         cats = df[USER_CATEGORY_COL].astype(str).str.strip()
         df, removed = _drop_and_report(
@@ -250,7 +247,8 @@ def preprocess_borrowings(df: pd.DataFrame, *, closed_days: pd.DataFrame) -> pd.
     else:
         print(f"[preprocess] skip user-category filter: missing column {USER_CATEGORY_COL}")
 
-    # --- numeric sanity ---
+    # numeric sanity
+    # remove negative loan durations
     if LOAN_DURATION_COL in df.columns:
         df[LOAN_DURATION_COL] = pd.to_numeric(df[LOAN_DURATION_COL], errors="coerce")
         neg_dur = df[LOAN_DURATION_COL].notna() & (df[LOAN_DURATION_COL] < 0)
@@ -264,7 +262,8 @@ def preprocess_borrowings(df: pd.DataFrame, *, closed_days: pd.DataFrame) -> pd.
         if not removed.empty:
             removed_all_steps.append(removed)
 
-    # --- late flag normalization + weird-loan rule ---
+    # late flag normalization + weird-loan rule
+    # remove 
     if LATE_COL in df.columns:
         df[LATE_COL] = (
             df[LATE_COL]
@@ -276,12 +275,12 @@ def preprocess_borrowings(df: pd.DataFrame, *, closed_days: pd.DataFrame) -> pd.
                     "1": True,
                     "0": False,
                     "true": True,
-                    "false": False,
+                    "false": False, 
                     "ja": True,
                     "nein": False,
                 }
             )
-            .fillna(False)
+            .fillna(False) # Missing/unknown treated as not late
             .astype(bool)
         )
         print(f"[preprocess] normalized column: {LATE_COL}")
@@ -295,7 +294,7 @@ def preprocess_borrowings(df: pd.DataFrame, *, closed_days: pd.DataFrame) -> pd.
     else:
         print(f"[preprocess] skip late normalization + weird-loan rule: missing column {LATE_COL}")
 
-    # --- final total removed per-year summary (absolute + %) ---
+    # final total removed per-year summary (absolute + %)
     if removed_all_steps:
         removed_all_df = pd.concat(removed_all_steps, ignore_index=True)
         _print_total_removed_summary(df_start, removed_all_df)
