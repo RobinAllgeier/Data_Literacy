@@ -2,8 +2,17 @@
 
 % Motivate the problem, situation or topic you decided to work on. Describe why it matters (is it of societal, economic, scientific value?). Outline the rest of the paper (use references, e.g.~to \Cref{sec:methods}: What kind of data you are working with, how you analyse it, and what kind of conclusion you reached. The point of the introduction is to make the reader want to read the rest of the paper.
 
-Public libraries play an important role in providing people with access to knowledge, education, and entertainment. To maintain efficient operations and ensure equitable resource availability, libraries must understand how their users interact with the collection. Analyzing borrowing behavior provides valuable insights into usage patterns, user preferences, and operational challenges, enabling data-driven decision-making to improve service quality.
-Understanding borrowing behavior encompasses multiple dimensions: which types of media are most frequently borrowed, how different user groups interact with the library, how loan durations and extension patterns vary across media types and user categories, and temporal trends in borrowing activity. One particularly important aspect of borrowing behavior is the timely return of borrowed items. Late returns can lead to reduced availability of popular materials, diminished satisfaction among users waiting for specific items, and increased administrative burdens for library staff. Identifying factors associated with late returns enables libraries to adapt their policies, such as loan duration limits, extension rules, or targeted reminder systems, to improve resource circulation and user satisfaction.
-This study analyzes borrowing records from a public library. The primary objective is to characterize borrowing behavior across multiple dimensions and to identify patterns that contribute to our understanding of library usage. Specifically, this study addresses the following questions: \textit{How do borrowing patterns vary across media types, user categories, and time periods? What observable characteristics of a loan are associated with late returns?} The analysis investigates temporal patterns, in borrowing activity, and examines the relationships between late returns and several factors.
+Public libraries serve a critical role in democratic societies by providing equal access to knowledge, education, and cultural resources.
+Understanding user borrowing behavior enables libraries to improve service quality and ensure materials remain available to all.
+This study analyzes borrowing records from the Tübingen City Library, addressing questions identified in collaboration with library staff to support evidence-based decision-making.
 
-Our analysis reveals several clear patterns: \dots(To Do)
+A central operational challenge is the timely return of borrowed materials.
+Late returns disrupt circulation efficiency: when items remain overdue, they are marked as on-loan in the system but are neither available for other patrons nor counted as part of the accessible collection.
+In severe cases, overdue items can escalate to multiple reminders and eventually legal action to recover replacement costs, straining administrative resources.
+Studies of academic library circulation demonstrate that return behavior is shaped by multiple factors including users characteristics, reminders, and institutional policies~\cite{library_fines_return}.
+
+Beyond late returns, understanding broader borrowing patterns such as temporal regularities, learning effects, and media preferences enables data-driven policy decisions.
+This analysis leverages over 2.4 million transactions from 2019 to 2025 to examine engagement over time.
+In \Cref{sec:methods}, we describe the session-based analytical framework that aggregates item-level records into visits.
+\Cref{sec:results} reveals distinct temporal usage patterns tied to operating hours and shows that late returns decline over initial sessions while extension requests increase.
+\Cref{sec:conclusion} discusses how these patterns inform library operations and policy.
