@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-# ---------- Project paths ----------
+# Project paths
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 DATA_DIR = PROJECT_ROOT / "dat"
@@ -19,43 +19,43 @@ REPORTS_DIR = PROJECT_ROOT / "doc" / "report"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
 
-# ---------- Column names (ADJUST THESE) ----------
+# Column names (ADJUST THESE)
 
-# --- core identifiers ---
+# core identifiers 
 AUTHOR_COL = "Autor"
 TITLE_COL = "Titel"
 ISBN_COL = "ISBN"
 BARCODE_COL = "Barcode"
 ISSUE_ID_COL = "issue_id"
 
-# --- item metadata ---
+# item metadata
 COLLECTION_CODE_COL = "Sammlungszeichen/CCODE"
 MEDIA_TYPE_COL = "Medientyp"
 TOPIC_COL = "Interessenkreis"
 
-# --- user metadata ---
+# user metadata
 USER_ID_COL = "Benutzer-Systemnummer"
 USER_CATEGORY_COL = "Benutzerkategorie"
 
-# --- dates ---
+# dates
 ISSUE_COL = "Ausleihdatum/Uhrzeit"
 RETURN_COL = "Rückgabedatum/Uhrzeit"
 
-# --- loan logic ---
+# loan logic
 LOAN_DURATION_COL = "Leihdauer"
 DAYS_LATE_COL = "Tage_zu_spät"
 LATE_COL = "Verspätet"
 EXTENSIONS_COL = "Anzahl_Verlängerungen"
 
-# --- provenance ---
+# provenance
 SOURCE_YEAR_COL = "source_year"
 
 
-# --- closed days/calender rules ---
+# closed days/calender rules
 CLOSED_DATE_COL = "schliesstag"
 
 
-# ---------- Preprocessing ----------
+# Preprocessing
 
 # library open days: Tue–Sat (Mon..Sun: 0,1,1,1,1,1,0)
 LIB_WEEKMASK = "0111110"
@@ -65,7 +65,7 @@ REMOVE_USER_CATEGORIES = {"MDA", "MZUZL", "SYS"}
 BASE_ALLOWED_OPEN_DAYS = 28 # base allowed open days for loan duration calculation
 MAX_EXTENSIONS_CAP = 6 # rule of the libary for max extensions
 
-# ---------- Derived / feature columns ----------
+# Derived / feature columns
 LATE_FLAG_COL = "late_flag"
 
 # user-session features
@@ -94,9 +94,9 @@ USER_STD_HOUR_COL = "user_std_hour"
 
 
 
-# ---------- Analysis parameters ----------
+# Analysis parameters
 
-# --- plot_1 learning-curve plot ---
+# plot_1 learning-curve plot
 EXPERIENCE_CUTOFF = 3          # early vs experienced threshold (session_index <= 3)
 MAX_SESSION_INDEX_PLOT = 25    # cap x-axis to avoid long tail dominating
 LEARNING_CURVE_SMOOTHING = 3  # moving average window size for learning curve plot

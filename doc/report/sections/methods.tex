@@ -20,8 +20,8 @@
 % \end{figure}
 
 \subsection{Data Collection and Description}
-This study investigates the borrowing behavior of users at the Tübingen City Library, as well as the frequency of late returns. The dataset was provided directly by the Tübingen City Library and covers borrowing records from 2019 to 2025. It encompasses over 2.4 million individual loan transactions and includes the following key variables: borrowing and return timestamps, 21 different media types, user categories, number of extensions, anonymized user identification numbers, as well as late return flags. Each record documents a complete transaction from initial borrowing to return.
-Domain knowledge was gathered through a personal interview with a staff member of the Tübingen City Library, providing contextual insights into the data collection processes, library operations, and data quality practices. Additional information was obtained through ongoing email communication with the library staff, which helped to clarify data inconsistencies and provide domain expertise for informed analysis decisions.
+This study investigates the borrowing behavior of users at the Tübingen City Library, as well as the frequency of late returns. The dataset was provided directly by the Tübingen City Library and covers borrowing records from 2019 to 2025. It encompasses over 2.4 million individual loan transactions from ober 21 thousand different users and includes the following key variables: borrowing and return timestamps, 21 different media types, user categories, number of extensions, anonymized user identification numbers, as well as late return flags. Each record documents a complete transaction from initial borrowing to return.
+Domain knowledge was gathered through a personal interview with a staff member of the Tübingen City Library, providing contextual insights into the data collection processes, library operations, and data quality practices. Additional information was obtained through ongoing email communication with the library staff, which helped to clarify data inconsistencies and provide domain expertise for informed analysis decisions. All our analyses can be reproduced using the code available at \url{https://github.com/RobinAllgeier/Data_Literacy}.\colorbox{red}{Link nochmal anpassen, wenn das Repo öffentlich ist.}
 
 \subsection{Data Quality Assessment: Sanity Checks}
 Prior to conducting any analysis, a comprehensive set of data quality checks were preformed to validate internal consistency and identify potential data quality issues. The following checks were implemented:
@@ -31,15 +31,14 @@ Prior to conducting any analysis, a comprehensive set of data quality checks wer
 \textbf{Duplicate Analysis:} Various forms of duplicates were examined. No exact duplicates were found, but identical borrowing timestamps occurred when useres borrowed multiple items in one transaction, with a maximum of seven items per transaction. These were retained as they represent valid borrowing behavior.
 
 \subsection{Data cleaning}
-Based on the result of the data quality assessment, the data was cleaned, based on four rules. The following entries were removed from the dataset:
+Based on the result of the data quality assessment, the data was cleaned using the following rules:
 \begin{itemize}
-    \item Entries with missing return timestamps, as they represent currently borrowed or lost items.
-    \item Entries with a borrowing time longer than the 196 days, because they extend the maximum borrowing period of 28 days and six extentions, which are considered implausible.
-    \item Borrowings taken by library’s staff members and system entries, which do not reflect typical user behavior.
-    \item For some analyses, only books were considered, because other media types have different borrowing duration limits and would distort the results.
-    \item For analyses comparing media types, media types with fewer than a minimum number of entries were excluded to reduce the influence of sparsely represented categories.
-
-
+    \item Missing or invalid issue timestamps led to removal, as they are essential for any temporal analysis.
+    \item Transactions without return timestamps were excluded, as they represent currently borrowed or lost items. Similarly, we removed cases where return timestamps preceded issue timestamps, which are considered data errors.
+    \item Entries with a borrowing time longer than the 196 days, because they extend the maximum borrowing period of 28 days and six extentions, which are considered implausible. However borrowings marked as returned late, were not removed as these represent valid cases of overdue returns.
+    \item Entries with user categories representing library staff members, institutions, or system accounts were excluded, as they do not reflect typical patron behavior.
+    %\item Transactions initiated outside regular library opening days (Tuesday through Saturday, excluding holidays and closure days) were removed to ensure the dataset reflects normal operating conditions.
+    \item Negative values in loan duration or days late fields were also removed as data errors.
 \end{itemize}
 These cleaning steps ensured that the dataset used for analysis was both reliable and relevant, thereby enhancing the validity of the findings.
 
