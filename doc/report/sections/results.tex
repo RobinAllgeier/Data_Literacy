@@ -6,7 +6,7 @@ Borrowing activity at the Tübingen City Library exhibits strong temporal patter
 \autoref{fig:visit-clock} displays average session counts aggregated into half-hour bins, separately for weekdays (Tuesday–Friday) and Saturdays (Monday/Sunday closed).
 Each bin represents the mean number of sessions occurring within that time window, averaged across all recorded days.
 
-\begin{figure}[H]
+\begin{figure}[ht]
     \centering
     \includegraphics{figures/plot_1_clock_plot.pdf}
     \caption{
@@ -45,7 +45,7 @@ Beyond these temporal patterns, user behavior evolves with repeated library enga
 Late-return probability shows a sharp decline over the first nine sessions, dropping from approximately 13\% to below 10\%, indicating rapid acquisition of library procedures such as due dates and reminder systems.
 Beyond session 10, the curve stabilizes into a relatively flat plateau around 8–9\%, suggesting users have transitioned from active learning into stable behavioral routines.
 
-\begin{figure}[H]
+\begin{figure}[ht]
     \centering
     \includegraphics{figures/plot_2_learning_curve.pdf}
     \caption{
@@ -70,6 +70,31 @@ This increase reveals a shift in user strategy: rather than simply becoming more
 The diverging trajectories suggest that learning manifests not as perfect compliance, but as adaptive behavior within library constraints.
 Notably, late returns never approach zero even among highly experienced users, indicating that some lateness stems from structural factors such as fixed loan limits or schedule conflicts, independent of user familiarity with procedures.
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics{figures/plot_4_media_type_stickiness.pdf}
+    \caption{
+        Consistency with early dominant media type across the user session index for
+        $k_0=1$
+        (\textcolor{pn_orange}{%
+            \tikz\draw[line width=1.2pt] (0,0) -- (0.9em,0)
+            node[midway, circle, fill=pn_orange, inner sep=1.2pt] {};
+        }\!),
+        $k_0=5$
+        (\textcolor{TUblue}{%
+            \tikz\draw[line width=1.2pt] (0,0) -- (0.9em,0)
+            node[midway, circle, fill=TUblue, inner sep=1.2pt] {};
+        }\!),
+        and $k_0=10$
+        (\textcolor{TUred}{%
+            \tikz\draw[line width=1.2pt] (0,0) -- (0.9em,0)
+            node[midway, circle, fill=TUred, inner sep=1.2pt] {};
+        }\!).
+        Shaded bands denote user-level bootstrap confidence intervals,
+        while thin lines show raw estimates and thicker lines rolling averages.
+    }
+    \label{fig:media-stickiness}
+\end{figure}
 
 
 
