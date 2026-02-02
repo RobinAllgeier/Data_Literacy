@@ -37,12 +37,6 @@ Among users with at least 10 sessions, the mean probability of returning on the 
 Visit times within a day are more dispersed, with a mean standard deviation of 2.1 hours across users, suggesting most do not restrict themselves to narrow time windows.
 However, approximately 3\% exhibit high precision, with standard deviations below 1 hour, indicating they return consistently at similar times of day.
 
-Beyond these patterns, we observe learning effects in how users manage late returns and loan extensions.
-\autoref{fig:learning-curve} shows both probabilities against the session index, tracking users from their first visit through their 25th session.
-Late-return probability shows a sharp decline over the first nine sessions, dropping from approximately 13\% to about 8\%, indicating rapid acquisition of library procedures such as due dates and reminder systems.
-Beyond session 10, the decline slows, suggesting users have largely adapted to library procedures though learning effects continue.
-
-
 \begin{figure}[ht]
     \centering
     \includegraphics{figures/plot_2_learning_curve.pdf}
@@ -62,10 +56,20 @@ Beyond session 10, the decline slows, suggesting users have largely adapted to l
     }\label{fig:learning-curve}
 \end{figure}
 
+Beyond these patterns, we observe learning effects in how users manage late returns and loan extensions.
+\autoref{fig:learning-curve} shows both probabilities against the session index, tracking users from their first visit through their 25th session.
+Late-return probability shows a sharp decline over the first nine sessions, dropping from approximately 13\% to about 8\%, indicating rapid acquisition of library procedures such as due dates and reminder systems.
+Beyond session 10, the decline slows, suggesting users have largely adapted to library procedures though learning effects continue.
+
+
 Extension probability exhibits the inverse pattern, rising from 50\% to over 65\% during this window.
 This increase reveals a shift in user strategy: rather than becoming more punctual, experienced users proactively request extensions to avoid lateness.
 The diverging trajectories suggest that learning manifests as adaptive behavior within library constraints rather than perfect compliance.
 Late returns persist among experienced users, indicating structural constraints rather than procedural unfamiliarity.
+
+Finally, we examine how users' media-type preferences evolve across sessions.
+\autoref{fig:media-stickiness} shows, for the early preference window $k_0 \in \{1,5,10\}$, the share of sessions whose dominant media type matches the user's early preferred type, plotted against the session index.
+Across all three curves, consistency decreases with increasing session index, with the strongest decline for smaller $k_0$.
 
 \begin{figure}[ht]
     \centering
@@ -92,10 +96,6 @@ Late returns persist among experienced users, indicating structural constraints 
         while thin lines show raw estimates and thicker lines rolling averages.
     }\label{fig:media-stickiness}
 \end{figure}
-
-Finally, we examine how users' media-type preferences evolve across sessions.
-\autoref{fig:media-stickiness} shows, for the early preference window $k_0 \in \{1,5,10\}$, the share of sessions whose dominant media type matches the user's early preferred type, plotted against the session index.
-Across all three curves, consistency decreases with increasing session index, with the strongest decline for smaller $k_0$.
 
 For $k_0=1$, users match their first-session dominant media type in about 64\% of second sessions.
 By session 25, this value drops to roughly 50\%, a decrease of about 14 percentage points.
