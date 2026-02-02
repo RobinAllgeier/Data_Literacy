@@ -17,7 +17,7 @@
 %     \item Missing or invalid issue timestamps led to removal, as they are essential for any temporal analysis.
 %     \item Transactions without return timestamps were excluded, as they represent currently borrowed or lost items. Similarly, we removed cases where return timestamps preceded issue timestamps, which are considered data errors.
 %     \item Entries with a borrowing time longer than the 196 days, because they extend the maximum borrowing period of 28 days and six extensions, which are considered implausible. However borrowings marked as returned late, were not removed as these represent valid cases of overdue returns.
-%     \item Entries with user categories representing library staff members, institutions, or system accounts were excluded, as they do not reflect typical patron behavior.
+%     \item Entries with user categories representing library staff members or system accounts were excluded, as they do not reflect typical patron behavior.
 %     %\item Transactions initiated outside regular library opening days (Tuesday through Saturday, excluding holidays and closure days) were removed to ensure the dataset reflects normal operating conditions.
 %     \item Negative values in loan duration or days late fields were also removed as data errors.
 % \end{itemize}
@@ -37,9 +37,6 @@ Given the complexity of library circulation systems and internal data structures
 We gathered domain knowledge through a personal interview with Mr.~Feldhoff-Lange, a staff member of the Tübingen City Library, which provided contextual insights into data collection procedures, internal system conventions, and data quality practices.
 Follow-up questions were clarified via ongoing email communication, which helped resolve inconsistencies in the raw export and inform several preprocessing decisions.
 
-\autoref{fig:yearly-overview} summarizes the dataset at the annual level.
-The blue bars show the total number of borrowings per calendar year, with a pronounced drop in 2021 and a subsequent recovery.
-By 2024, borrowing volume has almost returned to pre-pandemic levels, indicating a near restoration of overall library usage.
 \begin{figure}[ht]
     \centering
     \includegraphics{figures/plot_3_overview.pdf}
@@ -50,6 +47,10 @@ By 2024, borrowing volume has almost returned to pre-pandemic levels, indicating
     }
     \label{fig:yearly-overview}
 \end{figure}
+
+\autoref{fig:yearly-overview} summarizes the dataset at the annual level.
+The blue bars show the total number of borrowings per calendar year, with a pronounced drop in 2021 and a subsequent recovery.
+By 2024, borrowing volume has almost returned to pre-pandemic levels, indicating a near restoration of overall library usage.
 
 \subsection{Data Quality and Cleaning}
 The raw export from the circulation system reflects operational logging rather than a pre-cleaned analytical dataset, requiring extensive quality checks before analysis.
