@@ -1,18 +1,8 @@
 \section{Results}\label{sec:results}
 
 Borrowing activity at the Tübingen City Library exhibits strong temporal patterns tied to operating hours and user schedules.
-\autoref{fig:visit-clock} shows average session counts aggregated into half-hour bins, separately for weekdays (Tuesday–Friday) and Saturdays (Monday/Sunday closed).
+\autoref{fig:visit-clock} shows average session counts aggregated into half-hour bins for weekdays (Tuesday–Friday) and Saturdays (Monday/Sunday closed).
 Each bin represents the mean number of sessions occurring within that time window, averaged across all recorded days.
-
-Usage concentrates heavily during daytime hours, with clear peaks from late morning through afternoon.
-Weekdays show sustained high volume from opening through early afternoon, with a noticeable dip around midday consistent with lunch breaks.
-Activity rises again in the afternoon, aligning with work and school schedules.
-Saturday exhibits a later start and more compressed activity, suggesting leisure-driven rather than routine use.
-These aggregate patterns reveal shared daily rhythms shaped by operational hours and typical schedules, though individuals vary considerably in their regularity.
-
-Among users with at least 10 sessions, the mean probability of returning on the same day of the week is 40.4\%, indicating moderate day-of-week preferences, with some showing stronger consistency.
-Visit times within a day are more dispersed, with a mean standard deviation of 2.1 hours across users, suggesting most do not restrict themselves to narrow time windows.
-However, approximately 3\% exhibit high precision, with standard deviations below 1 hour, indicating they return consistently at similar times of day.
 
 \begin{figure}[ht]
     \centering
@@ -37,10 +27,21 @@ However, approximately 3\% exhibit high precision, with standard deviations belo
     }\label{fig:visit-clock}
 \end{figure}
 
+Usage concentrates heavily during daytime hours, with clear peaks from late morning through afternoon.
+Weekdays show sustained high volume from opening through early afternoon, with a noticeable dip around midday consistent with lunch breaks.
+Activity rises again in the afternoon, aligning with work and school schedules.
+Saturday exhibits a later start and more compressed activity, suggesting leisure-driven rather than routine use.
+These aggregate patterns reveal shared daily rhythms shaped by operational hours and typical schedules, though individuals vary considerably in their regularity.
+
+Among users with at least 10 sessions, the mean probability of returning on the same day of the week is 40.4\%, indicating moderate day-of-week preferences, with some showing stronger consistency.
+Visit times within a day are more dispersed, with a mean standard deviation of 2.1 hours across users, suggesting most do not restrict themselves to narrow time windows.
+However, approximately 3\% exhibit high precision, with standard deviations below 1 hour, indicating they return consistently at similar times of day.
+
 Beyond these patterns, we observe learning effects in how users manage late returns and loan extensions.
 \autoref{fig:learning-curve} shows both probabilities against the session index, tracking users from their first visit through their 25th session.
 Late-return probability shows a sharp decline over the first nine sessions, dropping from approximately 13\% to about 8\%, indicating rapid acquisition of library procedures such as due dates and reminder systems.
 Beyond session 10, the decline slows, suggesting users have largely adapted to library procedures though learning effects continue.
+
 
 \begin{figure}[ht]
     \centering
@@ -61,10 +62,10 @@ Beyond session 10, the decline slows, suggesting users have largely adapted to l
     }\label{fig:learning-curve}
 \end{figure}
 
-Extension probability exhibits the inverse pattern, rising from approximately 50\% to over 65\% during the same experience window.
-This increase reveals a shift in user strategy: rather than simply becoming more punctual, experienced users proactively request extensions to avoid lateness.
-The diverging trajectories suggest that learning manifests not as perfect compliance but as adaptive behavior within library constraints.
-Notably, late returns never approach zero even among highly experienced users, indicating that some lateness stems from structural factors such as fixed loan limits or schedule conflicts, independent of user familiarity with procedures.
+Extension probability exhibits the inverse pattern, rising from 50\% to over 65\% during this window.
+This increase reveals a shift in user strategy: rather than becoming more punctual, experienced users proactively request extensions to avoid lateness.
+The diverging trajectories suggest that learning manifests as adaptive behavior within library constraints rather than perfect compliance.
+Late returns persist among experienced users, indicating structural constraints rather than procedural unfamiliarity.
 
 \begin{figure}[ht]
     \centering

@@ -34,8 +34,8 @@ Additionally, each record contains anonymized user identifiers, user categories 
 All analyses can be reproduced using the accompanying \href{https://github.com/RobinAllgeier/Data_Literacy}{code repository}.
 
 Given the complexity of library circulation systems and internal data structures, we supplemented the quantitative dataset with qualitative domain expertise.
-We gathered domain knowledge through a personal interview with Mr.~Feldhoff-Lange, a staff member of the Tübingen City Library, which provided contextual insights into data collection procedures, internal system conventions, and data quality practices.
-Follow-up questions were clarified via ongoing email communication, which helped resolve inconsistencies in the raw export and inform several preprocessing decisions.
+We gathered domain knowledge through a interview with Mr.~Feldhoff-Lange, a staff member of the Tübingen City Library, which provided contextual insights into data collection procedures, internal system conventions, and data quality practices.
+Follow-up questions were clarified via email communication, which helped resolve inconsistencies in the raw export and inform several preprocessing decisions.
 
 \begin{figure}[ht]
     \centering
@@ -54,10 +54,10 @@ By 2024, borrowing volume has almost returned to pre-pandemic levels, indicating
 
 \subsection{Data Quality and Cleaning}
 The raw export from the circulation system reflects operational logging rather than a pre-cleaned analytical dataset, requiring extensive quality checks before analysis.
-We first assessed missing values and found that return timestamps were absent in some transactions, corresponding to items still on loan and not yet returned to the library, while user identifiers were missing in 6.7\%.
+We assessed missing values and found that return timestamps were absent in some transactions, corresponding to items still on loan and not yet returned to the library, while user identifiers were missing in 6.7\%.
 We then verified temporal consistency and plausibility by checking that return dates never preceded borrowing dates, derived loan durations and days-late values were non-negative, and that almost all loans complied with the library's maximum borrowing period.
 Under library rules, the maximum borrowing period is 28 days with up to six extensions of 28 days each, yielding a maximum loan period of 196 days.
-To accurately assess compliance with this limit, we incorporated an additional dataset documenting the library's opening days, counting loan durations only on days when the library was operational.
+To accurately assess compliance with this limit, we incorporated a dataset documenting the library's opening days, counting loan durations only on days when the library was operational.
 
 A small number of extreme outliers exceeding this threshold were identified as erroneous and excluded.
 Genuinely overdue loans beyond the standard period were retained as valid instances of late returns.
@@ -97,7 +97,9 @@ Sessions with ties were excluded from this analysis.
 A user's early preferred type is the most frequent media type across combined borrowings in the first $k_0$ sessions, where we consider $k_0 \in \{1,5,10\}$ to assess how the choice of this baseline window affects preference stability.
 We then compute curves over the session index $k$ showing how often the $k$-th session matches this early preferred type for each value of $k_0$.
 
-We quantified uncertainty for both learning curves and media stickiness measures via user-level bootstrap resampling.
-Given the dependence of observations within users and the unknown sampling distribution of these estimates, parametric methods are unsuitable.
-We thus resampled users with replacement, reconstructed their session sequences, and recomputed all curves for each bootstrap sample.
-We derived 95\% confidence intervals from the empirical distributions of these estimates across 1\,000 bootstrap iterations~\cite{Davison_Hinkley_1997}.
+We quantified uncertainty for learning curves and media stickiness via user-level bootstrap resampling.
+Given the dependence of observations within users, parametric methods are unsuitable.
+We resampled users with replacement, reconstructed their session sequences, and recomputed curves for each bootstrap sample.
+We derived 95\% confidence intervals from the empirical distributions across 1\,000 bootstrap iterations~\cite{Davison_Hinkley_1997}.
+
+
