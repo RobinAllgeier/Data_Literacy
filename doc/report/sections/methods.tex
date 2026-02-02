@@ -1,61 +1,90 @@
-\section{Data and Methods}\label{sec:methods}
 
+
+% \subsection{Data Collection and Description}
+% This study investigates the borrowing behavior of users at the Tübingen City Library, as well as the frequency of late returns. The dataset was provided directly by the Tübingen City Library and covers borrowing records from 2019 to 2025. It encompasses over 2.4 million individual loan transactions from over 21 thousand different users and includes the following key variables: borrowing and return timestamps, 21 different media types, user categories, number of extensions, anonymized user identification numbers, as well as late return flags. Each record documents a complete transaction from initial borrowing to return.
+% Domain knowledge was gathered through a personal interview with a staff member of the Tübingen City Library, providing contextual insights into the data collection processes, library operations, and data quality practices. Additional information was obtained through ongoing email communication with the library staff, which helped to clarify data inconsistencies and provide domain expertise for informed analysis decisions. All our analyses can be reproduced using the code available at \url{https://github.com/RobinAllgeier/Data_Literacy}.\colorbox{red}{Link nochmal anpassen, wenn das Repo öffentlich ist.}
+
+% \subsection{Data Quality Assessment: Sanity Checks}
+% Prior to conducting any analysis, a comprehensive set of data quality checks were performed to validate internal consistency and identify potential data quality issues. The following checks were implemented:
+% \textbf{Missing Values:} The proportion of missing values was assessed for each column. Return timestamps were missing in approximately 2\% of rows, which is expected for currently borrowed or lost items and therefore retained. User IDs showed a missing rate of 6.7\%, which was handled accordingly in subsequent analyses. All other relevant columns had such low missing rates, that they were considered negligible.
+% \textbf{Temporal Consistency:} The integrity of temporal data was verified by checking for logical inconsistencies, such as return dates preceding borrowing dates and a correct calculation of duration values from the timestamps.
+% \textbf{Late Return Consistency:} The consistency between late return flags and the number of days late was validated. Additionally, implausible values in the extensions column were checked. Only a few cases with more than six extensions were identified (0.003\%), which  but were not further investigated due to their negligible impact.
+% \textbf{Duplicate Analysis:} Various forms of duplicates were examined. No exact duplicates were found, but identical borrowing timestamps occurred when users borrowed multiple items in one transaction, with a maximum of seven items per transaction. These were retained as they represent valid borrowing behavior.
+
+% \subsection{Data cleaning}
+% Based on the result of the data quality assessment, the data was cleaned using the following rules:
+% \begin{itemize}
+%     \item Missing or invalid issue timestamps led to removal, as they are essential for any temporal analysis.
+%     \item Transactions without return timestamps were excluded, as they represent currently borrowed or lost items. Similarly, we removed cases where return timestamps preceded issue timestamps, which are considered data errors.
+%     \item Entries with a borrowing time longer than the 196 days, because they extend the maximum borrowing period of 28 days and six extensions, which are considered implausible. However borrowings marked as returned late, were not removed as these represent valid cases of overdue returns.
+%     \item Entries with user categories representing library staff members, institutions, or system accounts were excluded, as they do not reflect typical patron behavior.
+%     %\item Transactions initiated outside regular library opening days (Tuesday through Saturday, excluding holidays and closure days) were removed to ensure the dataset reflects normal operating conditions.
+%     \item Negative values in loan duration or days late fields were also removed as data errors.
+% \end{itemize}
+% These cleaning steps ensured that the dataset used for analysis was both reliable and relevant, thereby enhancing the validity of the findings.
+
+
+\section{Data and Methods}\label{sec:methods}
 %In this section, describe \emph{what you did}. Roughly speaking, explain what data you worked with, how or from where it was collected, it's structure and size. Explain your analysis, and any specific choices you made in it. Depending on the nature of your project, you may focus more or less on certain aspects. If you collected data yourself, explain the collection process in detail. If you downloaded data from the net, show an exploratory analysis that builds intuition for the data, and shows that you know the data well. If you are doing a custom analysis, explain how it works and why it is the right choice. If you are using a standard tool, it may still help to briefly outline it. Cite relevant works. You can use the \verb|\citep| and \verb|\citet| commands for this purpose \citep{mackay2003information}.
 
-% This is the template for a figure from the original ICML submission pack. In lecture 10 we will discuss plotting in detail.
-% Refer to this lecture on how to include figures in this text.
-%
-% \begin{figure}[ht]
-% \vskip 0.2in
-% \begin{center}
-% \centerline{\includegraphics[width=\columnwidth]{icml_numpapers}}
-% \caption{Historical locations and number of accepted papers for International
-% Machine Learning Conferences (ICML 1993 -- ICML 2008) and International
-% Workshops on Machine Learning (ML 1988 -- ML 1992). At the time this figure was
-% produced, the number of accepted papers for ICML 2008 was unknown and instead
-% estimated.}
-% \label{icml-historical}
-% \end{center}
-% \vskip -0.2in
-% \end{figure}
+We base our analysis on a non-public export from the Tübingen City Library's circulation system covering the years 2019 to 2025.
+The dataset comprises over 2.4 million completed loan transactions from approximately 21\,000 users.
+Each record corresponds to a single borrowed item and includes basic transaction information: borrowing and return timestamps, the number of loan extensions, and a flag marking whether the item was returned late.
+Additionally, each record contains anonymized user identifiers, user categories (distinguishing adults, children, and institutional accounts), and item-specific information such as media type indicators for 21 distinct categories.
+All analyses can be reproduced using the accompanying code repository.\footnote{\url{https://github.com/RobinAllgeier/Data_Literacy}}
 
-\subsection{Data Collection and Description}
-This study investigates the borrowing behavior of users at the Tübingen City Library, as well as the frequency of late returns. The dataset was provided directly by the Tübingen City Library and covers borrowing records from 2019 to 2025. It encompasses over 2.4 million individual loan transactions from over 21 thousand different users and includes the following key variables: borrowing and return timestamps, 21 different media types, user categories, number of extensions, anonymized user identification numbers, as well as late return flags. Each record documents a complete transaction from initial borrowing to return.
-Domain knowledge was gathered through a personal interview with a staff member of the Tübingen City Library, providing contextual insights into the data collection processes, library operations, and data quality practices. Additional information was obtained through ongoing email communication with the library staff, which helped to clarify data inconsistencies and provide domain expertise for informed analysis decisions. All our analyses can be reproduced using the code available at \url{https://github.com/RobinAllgeier/Data_Literacy}.\colorbox{red}{Link nochmal anpassen, wenn das Repo öffentlich ist.}
+Given the complexity of library circulation systems and internal data structures, we supplemented the quantitative dataset with qualitative domain expertise.
+We gathered domain knowledge through a personal interview with a staff member of the Tübingen City Library, which provided contextual insights into data collection procedures, internal system conventions, and data quality practices.
+Follow-up questions were clarified via ongoing email communication, which helped resolve inconsistencies in the raw export and inform several preprocessing decisions.
 
-\subsection{Data Quality Assessment: Sanity Checks}
-Prior to conducting any analysis, a comprehensive set of data quality checks were performed to validate internal consistency and identify potential data quality issues. The following checks were implemented:
-\textbf{Missing Values:} The proportion of missing values was assessed for each column. Return timestamps were missing in approximately 2\% of rows, which is expected for currently borrowed or lost items and therefore retained. User IDs showed a missing rate of 6.7\%, which was handled accordingly in subsequent analyses. All other relevant columns had such low missing rates, that they were considered negligible.
-\textbf{Temporal Consistency:} The integrity of temporal data was verified by checking for logical inconsistencies, such as return dates preceding borrowing dates and a correct calculation of duration values from the timestamps.
-\textbf{Late Return Consistency:} The consistency between late return flags and the number of days late was validated. Additionally, implausible values in the extensions column were checked. Only a few cases with more than six extensions were identified (0.003\%), which  but were not further investigated due to their negligible impact.
-\textbf{Duplicate Analysis:} Various forms of duplicates were examined. No exact duplicates were found, but identical borrowing timestamps occurred when users borrowed multiple items in one transaction, with a maximum of seven items per transaction. These were retained as they represent valid borrowing behavior.
+\autoref{fig:yearly-overview} summarizes the dataset at the annual level.
+The blue bars show the total number of borrowings per calendar year, with a pronounced drop in 2021 and a subsequent recovery.
+By 2024, borrowing volume has almost returned to pre‑pandemic levels, indicating a near restoration of overall library usage.
 
-\subsection{Data cleaning}
-Based on the result of the data quality assessment, the data was cleaned using the following rules:
+\begin{figure}[ht]
+    \centering
+    \includegraphics{figures/plot_3_overview.pdf}
+    \caption{
+        Library borrowing statistics by year.
+        Blue bars show the total number of borrowings per year (left axis).
+        The orange line indicates the share of loans returned late, and the red line the share of transactions removed during data cleaning (right axis).
+    }
+    \label{fig:yearly-overview}
+\end{figure}
+
+\subsection{Data Quality and Cleaning}
+
+The raw export from the circulation system reflects operational logging rather than a pre-cleaned analytical dataset, requiring extensive quality checks before analysis.
+We first assessed missing values and found that return timestamps were absent in some transactions, corresponding to items still on loan and not yet returned to the library, while user identifiers were missing in 6.7\%.
+We then verified temporal consistency and plausibility by checking that return dates never preceded borrowing dates, that derived loan durations and days-late values were non-negative, and that almost all loans complied with the library's maximum borrowing period.
+Under library rules, users may borrow items for 28 days with up to six extensions of 28 days each, yielding a maximum loan period of 196 days.
+To accurately assess compliance with this limit, we incorporated an additional dataset documenting the library's opening days, counting loan durations only on days when the library was operational.
+
+A small number of extreme outliers exceeding this threshold were identified as erroneous and excluded.
+Genuinely overdue loans beyond the standard period were retained as valid instances of late returns.
+
+Based on these checks, we applied a set of cleaning rules, of which the most influential were:
 \begin{itemize}
-    \item Missing or invalid issue timestamps led to removal, as they are essential for any temporal analysis.
-    \item Transactions without return timestamps were excluded, as they represent currently borrowed or lost items. Similarly, we removed cases where return timestamps preceded issue timestamps, which are considered data errors.
-    \item Entries with a borrowing time longer than the 196 days, because they extend the maximum borrowing period of 28 days and six extensions, which are considered implausible. However borrowings marked as returned late, were not removed as these represent valid cases of overdue returns.
-    \item Entries with user categories representing library staff members, institutions, or system accounts were excluded, as they do not reflect typical patron behavior.
-    %\item Transactions initiated outside regular library opening days (Tuesday through Saturday, excluding holidays and closure days) were removed to ensure the dataset reflects normal operating conditions.
-    \item Negative values in loan duration or days late fields were also removed as data errors.
+    \item Removal of transactions with missing return timestamps, which represent items still on loan at the time of data export and cannot be used for analyses of completed borrowing cycles. This primarily affected 2025 data (nearly 50\,000 transactions still active), while 2024 had only about 90 such cases.
+    \item Exclusion of transactions linked to library staff, institutional accounts, or system users, as these do not reflect typical user borrowing behavior.
+    \item Exclusion of loans with temporal inconsistencies or implausibly long borrowing periods, while retaining genuinely overdue loans.
 \end{itemize}
-These cleaning steps ensured that the dataset used for analysis was both reliable and relevant, thereby enhancing the validity of the findings.
-
+The red line in \autoref{fig:yearly-overview} shows that the share of removed records remained stable across most years at around 1.5\%, with a slight peak in 2021 due to irregular loan patterns during the pandemic and a pronounced increase to 15.14\% in 2025 driven primarily by the large number of loans still active at export. 
+Our cleaning approach prioritized retaining as much valid data as possible while removing only erroneous or incomplete entries.
 
 \subsection{Analysis Methods}
 
-To shift from item-level borrowing records to user-level behavioral analysis, individual borrowings were aggregated into user-specific sessions.
+To shift from item-level borrowing records to user-level behavioral analysis, we aggregated individual borrowings into user-specific sessions.
 Each record represents a single item, whereas users typically borrow multiple items in a single library visit.
 We thus define a session as all borrowings by the same user on the same calendar day.
-Sessions were ordered chronologically per user and assigned a session index as a proxy for accumulating experience.
-Session-level indicators were derived via aggregation.
+We ordered sessions chronologically per user and assigned a session index as a proxy for accumulating experience.
+We derived session-level indicators via aggregation.
 A session was classified as \emph{late} if \emph{any} item was returned after its due date, and as \emph{extended} if \emph{any} item received a loan extension.
 This conservative threshold marks the session according to the user's behavior at that experience level.
 Even one late return or extension shows their actions linked to that session.
 This session-based representation provides the foundation for all subsequent analyses.
 
-Behavioral adaptation over time was examined using the session index as a proxy for user experience.
+We examined behavioral adaptation over time using the session index as a proxy for user experience.
 For each experience level $k$, we computed the proportion of late sessions and sessions with extensions across all users who reached at least $k$ sessions, ensuring each user contributes at most one observation per level.
 Let $L_{u,k}$ indicate whether the $k$-th session of user $u$ contains at least one late item.
 The late-return learning curve is then
@@ -63,15 +92,14 @@ The late-return learning curve is then
 \hat{p}_{L}(k) = \frac{1}{|U_k|} \sum_{u \in U_k} L_{u,k}
 \]
 where $U_k$ is the set of users with at least $k$ sessions.
-The extension curve was computed analogously.
+We computed the extension curve analogously.
 
 To analyze media-type preferences across user sessions, we define each session's dominant media type as its most frequent category.
-Sessions with ties are excluded from this analysis.
-A user's early preferred type is the most frequent media type across combined borrowings in the first $k_0 \in \{1,5,10\}$ sessions. 
-We then compute curves over the session index $k$ showing how often the $k$-th session matches this early preferred type for each $k_0$.
+We excluded sessions with ties from this analysis.
+A user's early preferred type is the most frequent media type across combined borrowings in the first $k_0$ sessions, where we consider $k_0 \in \{1,5,10\}$ to assess how the choice of this baseline window affects preference stability.
+We then compute curves over the session index $k$ showing how often the $k$-th session matches this early preferred type for each value of $k_0$.
 
-Uncertainty for both learning curves and media stickiness measures was quantified via user-level bootstrap resampling.
+We quantified uncertainty for both learning curves and media stickiness measures via user-level bootstrap resampling.
 Given the dependence of observations within users and the unknown sampling distribution of these estimates, parametric methods are unsuitable.
 We thus resampled users with replacement, reconstructed their session sequences, and recomputed all curves for each bootstrap sample.
-Confidence intervals were derived from the empirical distributions of these estimates~\cite{Davison_Hinkley_1997}.
-
+We derived 95\% confidence intervals from the empirical distributions of these estimates across 1\,000 bootstrap iterations~\cite{Davison_Hinkley_1997}.

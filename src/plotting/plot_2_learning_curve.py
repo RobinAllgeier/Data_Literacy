@@ -69,7 +69,7 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     # --------------------------------------------------
     # Bootstrap CI (user-level)
     # --------------------------------------------------
-    N_BOOT = 300
+    N_BOOT = 1000
     ALPHA = 0.05
     rng = np.random.default_rng(42)
 
