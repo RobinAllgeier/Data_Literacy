@@ -9,8 +9,32 @@ This repository contains the code and analysis for a data literacy project exami
 Using a single, structured dataset, we perform descriptive analyses to study learning effects, temporal usage patterns, and regularity in user behavior over repeated borrowing sessions. The project follows a transparent and reproducible workflow, including dataset inspection, sanity checks, data cleaning, and exploratory analysis.
 The focus is on understanding behavioral patterns in the data rather than building predictive models.
 
-## Project Structure
+## Starting Guide
 
+### Prerequisites
+- **Python >= 3.10**
+- **LaTeX** (to build the report and render LaTeX-style plot text)
+
+### Installation
+```bash
+pip install -e .
+```
+
+### Usage
+
+```bash
+python -m src.main [--version <name>] [--use-processed]
+```
+
+### Parameters
+- `--version <name>` (default: `v1`)  
+  Name of the processed dataset version folder (e.g. `v1`, `v2`).  
+  Controls where the processed data is saved/loaded.
+
+- `--use-processed` (default: `False`)  
+  If set, loads the processed dataset for the given `--version` and skips preprocessing + feature generation.
+
+## Project Structure
 ```
 DATA_LITERACY/
 ├── report.pdf          # Final project report (compiled PDF)
