@@ -46,19 +46,19 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     # else:
     #     extensions_count = pd.Series(0, index=years)
     
-    # Count late loans
-    if 'late_bool' in df.columns:
-        late_count = df.groupby('year')['late_bool'].sum()
-    elif 'Verspätet' in df.columns:
-        late_count = df.groupby('year')['Verspätet'].sum()
-    else:
-        late_count = pd.Series(0, index=years)
+    # # Count late loans
+    # if 'late_bool' in df.columns:
+    #     late_count = df.groupby('year')['late_bool'].sum()
+    # elif 'Verspätet' in df.columns:
+    #     late_count = df.groupby('year')['Verspätet'].sum()
+    # else:
+    #     late_count = pd.Series(0, index=years)
     
     # Ensure all series have the same index
     cleaned_counts = cleaned_counts.reindex(years, fill_value=0)
     removed_counts = removed_counts.reindex(years, fill_value=0)
     # extensions_count = extensions_count.reindex(years, fill_value=0)
-    late_count = late_count.reindex(years, fill_value=0)
+    # late_count = late_count.reindex(years, fill_value=0)
     
     fig, ax1 = plt.subplots()
     x = np.arange(len(years))
@@ -87,20 +87,26 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     ax2 = ax1.twinx()
     
     # Calculate percentages
-    late_rate = (late_count / cleaned_counts * 100).fillna(0)
+    # late_rate = (late_count / cleaned_counts * 100).fillna(0)
     removed_rate = (removed_counts / (cleaned_counts + removed_counts) * 100).fillna(0)
     
     # Plot lines for rates
-    line_late = ax2.plot(x, late_rate.values, linewidth=1.3, marker='o', markersize=2.5,
-                         color=rgb.pn_orange, label='Late Return Rate', zorder=5)
-    line_removed = ax2.plot(x, removed_rate.values, linewidth=1.3, marker='o', markersize=2.5,
-                            linestyle='--', color=rgb.tue_red, label='Removed Data Rate', zorder=5)
+    # line_late = ax2.plot(x, late_rate.values, linewidth=1.3, marker='o', markersize=2.5,
+    #                      color=rgb.tue_red, label='Late Return Rate', zorder=5)
+    line_removed = ax2.plot(x,
+                            removed_rate.values,
+                            linewidth=1.3,
+                            marker='o',
+                            markersize=2.5,
+                            color=rgb.pn_orange,
+                            label='Removed Data Rate',
+                            zorder=5)
     
-    ax2.set_ylabel('Rate')
-    ax2.set_ylim(0, max(late_rate.max(), removed_rate.max()) * 1.15)
+    ax2.set_ylabel('Rate of removed data')
+    # ax2.set_ylim(0, max(late_rate.max(), removed_rate.max()) * 1.15)
     ax2.yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'{int(x)}\%'))
     
-    ax1.set_title('Annual Library Borrowing Volume and Data Quality Indicators')
+    ax1.set_title('Annual Library Borrowing Volume and Portion of Removed Data')
     fig.tight_layout()
     
     # Save

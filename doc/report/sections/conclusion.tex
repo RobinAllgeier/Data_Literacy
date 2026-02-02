@@ -1,16 +1,38 @@
 \section{Discussion \& Conclusion}\label{sec:conclusion}
 
 % Use this section to briefly summarize the entire text. Highlight limitations and problems, but also make clear statements where they are possible and supported by the analysis.
-Public libraries generate rich datasets that provide a detailed view of user borrowing behavior. However, leveraging these data requires extensive domain knowledge. Understanding library rules, operating hours, internal system conventions, and similar operational details is essential to interpret the data correctly. This work was based on a non-public and mostly unprocessed dataset from the Tübingen City Library. This setting presented both challenges and opportunities.
-A significant amount of the work was devoted to evaluating and cleaning up the data quality, which relied in parts on the library's insights to resolve inconsistencies and understand the structure of the data.
+% Public libraries generate rich datasets that provide a detailed view of user borrowing behavior. However, leveraging these data requires extensive domain knowledge. Understanding library rules, operating hours, internal system conventions, and similar operational details is essential to interpret the data correctly. This work was based on a non-public and mostly unprocessed dataset from the Tübingen City Library. This setting presented both challenges and opportunities.
+% A significant amount of the work was devoted to evaluating and cleaning up the data quality, which relied in parts on the library's insights to resolve inconsistencies and understand the structure of the data.
 
-There are several limitations to consider. First, the dataset only includes borrowing records from 2019 onwards, as earlier data were collected using different system conventions. This restricts the temporal scope of the analysis and prevents the investigation of long-term trends. Second, user behavior can only be observed indirectly through recorded transactions. As the temporal analysis suggests, several sources of bias and external influences are not captured in the data. These include constraints on user schedules, social contexts and unobserved personal circumstances. Such factors limit the precision with which behavioral patterns can be inferred. For example, it remains unknown whether items are borrowed for the users themselves or for others (e.g., parents borrowing for their children), which can affect the interpretation of observed behavior.
+% There are several limitations to consider. First, the dataset only includes borrowing records from 2019 onwards, as earlier data were collected using different system conventions. This restricts the temporal scope of the analysis and prevents the investigation of long-term trends. Second, user behavior can only be observed indirectly through recorded transactions. As the temporal analysis suggests, several sources of bias and external influences are not captured in the data. These include constraints on user schedules, social contexts and unobserved personal circumstances. Such factors limit the precision with which behavioral patterns can be inferred. For example, it remains unknown whether items are borrowed for the users themselves or for others (e.g., parents borrowing for their children), which can affect the interpretation of observed behavior.
 
-Nevertheless, the analysis of user behavior revealed both aggregated usage patterns describing daily library use and individual-level behaviors. The results indicate that temporally consistent borrowing behavior is difficult for the majority of users, while a small subgroup nevertheless exhibits highly regular temporal routines.
-Furthermore, the analysis of media-type choices suggests that early preferences remain influential but become less predictive over repeated sessions. This suggests that borrowing is guided by a stable core media-type preference, but experienced users also expand their choices to a broader range.
+% Nevertheless, the analysis of user behavior revealed both aggregated usage patterns describing daily library use and individual-level behaviors. The results indicate that temporally consistent borrowing behavior is difficult for the majority of users, while a small subgroup nevertheless exhibits highly regular temporal routines.
+% Furthermore, the analysis of media-type choices suggests that early preferences remain influential but become less predictive over repeated sessions. This suggests that borrowing is guided by a stable core media-type preference, but experienced users also expand their choices to a broader range.
 
 
-Regarding the central issue of overdue behavior, the results suggest that late returns are not primarily driven by persistent user unreliability, but rather by a lack of experience and routine in early stages of library usage.
-Over successive sessions, users exhibit learning effects. Overdue rates decline, while the use of the renewal system increases. This indicates that users adapt to institutional rules and develop strategies to manage borrowing deadlines more effectively over time. From a practical perspective, these findings imply that targeted communication and reminder systems for new users may be more effective than uniform enforcement mechanisms, as they address the phase in which overdue risk is highest.
+% Regarding the central issue of overdue behavior, the results suggest that late returns are not primarily driven by persistent user unreliability, but rather by a lack of experience and routine in early stages of library usage.
+% Over successive sessions, users exhibit learning effects. Overdue rates decline, while the use of the renewal system increases. This indicates that users adapt to institutional rules and develop strategies to manage borrowing deadlines more effectively over time. From a practical perspective, these findings imply that targeted communication and reminder systems for new users may be more effective than uniform enforcement mechanisms, as they address the phase in which overdue risk is highest.
 
-Overall, the findings underline the value of systematically analyzing library data to support informed operational and policy decisions. Moreover, the session-based representation and preprocessing framework established in this work provides a basis for further analysis.
+% Overall, the findings underline the value of systematically analyzing library data to support informed operational and policy decisions. Moreover, the session-based representation and preprocessing framework established in this work provides a basis for further analysis.
+
+Our analysis of borrowing records from the Tübingen City Library reveals several behavioral patterns.
+Most notably, late return behavior is not primarily driven by persistent user unreliability, but rather by lack of experience during early library engagement.
+
+Late return probability declines sharply from approximately 13\% in first sessions to close to 8\% over the initial sessions, while extension requests rise from 50\% to over 65\% during the same period.
+This diverging pattern indicates that users learn to navigate library procedures proactively rather than simply becoming more punctual.
+Even among experienced users, late returns persist due to structural factors beyond user knowledge or behavior.
+
+These findings offer practical insights for the Tübingen City Library.
+Overdue risk is concentrated in early sessions, suggesting that targeted communication and reminder systems for new users may be more effective than uniform enforcement mechanisms.
+The increasing use of extensions indicates users value this system—ensuring it remains accessible could further reduce involuntary late returns.
+Additional analyses available in the accompanying repository examine factors such as media type, user categories, and seasonal patterns that influence late return behavior.
+
+Beyond late returns, we observed that borrowing activity concentrates during daytime hours aligned with work and school schedules, while media-type preferences remain influential but become less predictive over sessions as experienced users expand their borrowing range.
+These patterns reveal how users adapt their behavior to library operations over time.
+
+Several limitations constrain our analysis.
+The dataset covers only 2019 onwards due to earlier system conventions, and user behavior can only be observed indirectly through transactions.
+Contextual factors such as whether items are borrowed for oneself or others remain unobserved.
+Nevertheless, this work demonstrates the value of systematically analyzing library circulation data to support informed operational decisions.
+The session-based representation and preprocessing framework established here provides a foundation for further analysis, such as evaluating the effectiveness of reminder systems or examining policy changes over time.
+By revealing learning effects and behavioral adaptation patterns, libraries can move from reactive enforcement toward proactive support systems.
