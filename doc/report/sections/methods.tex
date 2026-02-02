@@ -34,13 +34,12 @@ Additionally, each record contains anonymized user identifiers, user categories 
 All analyses can be reproduced using the accompanying \href{https://github.com/RobinAllgeier/Data_Literacy}{code repository}.
 
 Given the complexity of library circulation systems and internal data structures, we supplemented the quantitative dataset with qualitative domain expertise.
-We gathered domain knowledge through a personal interview with Mr.\ Feldhoff-Lange, a staff member of the Tübingen City Library, which provided contextual insights into data collection procedures, internal system conventions, and data quality practices.
+We gathered domain knowledge through a personal interview with Mr.~Feldhoff-Lange, a staff member of the Tübingen City Library, which provided contextual insights into data collection procedures, internal system conventions, and data quality practices.
 Follow-up questions were clarified via ongoing email communication, which helped resolve inconsistencies in the raw export and inform several preprocessing decisions.
 
 \autoref{fig:yearly-overview} summarizes the dataset at the annual level.
 The blue bars show the total number of borrowings per calendar year, with a pronounced drop in 2021 and a subsequent recovery.
-By 2024, borrowing volume has almost returned to pre‑pandemic levels, indicating a near restoration of overall library usage.
-
+By 2024, borrowing volume has almost returned to pre-pandemic levels, indicating a near restoration of overall library usage.
 \begin{figure}[ht]
     \centering
     \includegraphics{figures/plot_3_overview.pdf}
@@ -53,11 +52,10 @@ By 2024, borrowing volume has almost returned to pre‑pandemic levels, indicati
 \end{figure}
 
 \subsection{Data Quality and Cleaning}
-
 The raw export from the circulation system reflects operational logging rather than a pre-cleaned analytical dataset, requiring extensive quality checks before analysis.
 We first assessed missing values and found that return timestamps were absent in some transactions, corresponding to items still on loan and not yet returned to the library, while user identifiers were missing in 6.7\%.
-We then verified temporal consistency and plausibility by checking that return dates never preceded borrowing dates, that derived loan durations and days-late values were non-negative, and that almost all loans complied with the library's maximum borrowing period.
-Under library rules, users may borrow items for 28 days with up to six extensions of 28 days each, yielding a maximum loan period of 196 days.
+We then verified temporal consistency and plausibility by checking that return dates never preceded borrowing dates, derived loan durations and days-late values were non-negative, and that almost all loans complied with the library's maximum borrowing period.
+Under library rules, the maximum borrowing period is 28 days with up to six extensions of 28 days each, yielding a maximum loan period of 196 days.
 To accurately assess compliance with this limit, we incorporated an additional dataset documenting the library's opening days, counting loan durations only on days when the library was operational.
 
 A small number of extreme outliers exceeding this threshold were identified as erroneous and excluded.
@@ -65,7 +63,7 @@ Genuinely overdue loans beyond the standard period were retained as valid instan
 
 Based on these checks, we applied a set of cleaning rules, of which the most influential were:
 \begin{itemize}
-    \item Removal of transactions with missing return timestamps, which represent items still on loan at the time of data export and cannot be used for analyses of completed borrowing cycles. This primarily affected 2025 data (nearly 50\,000 transactions still active), while 2024 had only about 90 such cases.
+    \item Removal of transactions with missing return timestamps, which represent items still on loan at the time of data export and cannot be used for analyses of completed borrowing cycles. This primarily affected data from 2025 (nearly 50\,000 transactions still active), while 2024 had only about 90 such cases.
     \item Exclusion of transactions linked to library staff, institutional accounts, or system users, as these do not reflect typical user borrowing behavior.
     \item Exclusion of loans with temporal inconsistencies or implausibly long borrowing periods, while retaining genuinely overdue loans.
 \end{itemize}
@@ -73,12 +71,11 @@ The red line in \autoref{fig:yearly-overview} shows that the share of removed re
 Our cleaning approach prioritized retaining as much valid data as possible while removing only erroneous or incomplete entries.
 
 \subsection{Analysis Methods}
-
 To shift from item-level borrowing records to user-level behavioral analysis, we aggregated individual borrowings into user-specific sessions.
 Each record represents a single item, whereas users typically borrow multiple items in a single library visit.
-We thus define a session as all borrowings by the same user on the same calendar day.
-We ordered sessions chronologically per user and assigned a session index as a proxy for accumulating experience.
-We derived session-level indicators via aggregation.
+We thus define a session as all borrowings by the same user on the same calendar day
+Sessions were ordered chronologically per user, and each was assigned a session index as a proxy for accumulating experience.
+Session-level indicators were then derived via aggregation.
 A session was classified as \emph{late} if \emph{any} item was returned after its due date, and as \emph{extended} if \emph{any} item received a loan extension.
 This conservative threshold marks the session according to the user's behavior at that experience level.
 Even one late return or extension shows their actions linked to that session.
@@ -95,7 +92,7 @@ where $U_k$ is the set of users with at least $k$ sessions.
 We computed the extension curve analogously.
 
 To analyze media-type preferences across user sessions, we define each session's dominant media type as its most frequent category.
-We excluded sessions with ties from this analysis.
+Sessions with ties were excluded from this analysis.
 A user's early preferred type is the most frequent media type across combined borrowings in the first $k_0$ sessions, where we consider $k_0 \in \{1,5,10\}$ to assess how the choice of this baseline window affects preference stability.
 We then compute curves over the session index $k$ showing how often the $k$-th session matches this early preferred type for each value of $k_0$.
 
