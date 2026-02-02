@@ -74,7 +74,7 @@ Notably, late returns never approach zero even among highly experienced users, i
     \centering
     \includegraphics{figures/plot_4_media_type_stickiness.pdf}
     \caption{
-        Consistency with early dominant media type across the user session index for
+        Consistency relative to the dominant media-type across the user session index for
         $k_0=1$
         (\textcolor{pn_orange}{%
             \tikz\draw[line width=1.2pt] (0,0) -- (0.9em,0)
@@ -84,7 +84,7 @@ Notably, late returns never approach zero even among highly experienced users, i
         (\textcolor{TUblue}{%
             \tikz\draw[line width=1.2pt] (0,0) -- (0.9em,0)
             node[midway, circle, fill=TUblue, inner sep=1.2pt] {};
-        }\!),
+        }\!)
         and $k_0=10$
         (\textcolor{TUred}{%
             \tikz\draw[line width=1.2pt] (0,0) -- (0.9em,0)
@@ -101,6 +101,7 @@ In addition to timing and return behavior, the consistency of media-type choices
 \autoref{fig:media-stickiness} shows, for $k_0 \in \{1,5,10\}$, the share of sessions whose dominant media type matches
 the user’s early preferred type, plotted against the session index. Across all three curves, consistency decreases with
 increasing session index, with the strongest decline for smaller $k_0$.
+
 For $k_0=1$, users match their first-session dominant media type in about 64\% of second sessions.
 By session 25, this value drops to roughly 50\%, a decrease of about 14 percentage points.
 For $k_0=10$, the decrease is about 7 percentage points, and the curve remains close to 60\% in later sessions.

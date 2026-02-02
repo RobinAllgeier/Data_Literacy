@@ -269,8 +269,8 @@ def make_plot(
         )
 
     ax.set_xlabel("User session index")
-    ax.set_ylabel("Share of sessions matching early dominant media type")
-    ax.set_title("Consistency with early dominant media type")
+    ax.set_ylabel("Match probability")
+    ax.set_title("Persistence of Early Media-Type Preference")
 
     ax.xaxis.set_major_locator(MultipleLocator(5))
     ax.xaxis.set_minor_locator(MultipleLocator(1))

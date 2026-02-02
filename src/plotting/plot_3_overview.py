@@ -66,14 +66,14 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     
     # Left axis: Total borrowings as bars
     bars1 = ax1.bar(x, cleaned_counts.values, width,
-                    label='Total Borrowings', color=rgb.tue_blue, alpha=0.85, zorder=2)
+                    label='Number of Borrowings', color=rgb.tue_blue, alpha=0.85, zorder=2)
     
     # # Extensions as thinner bars inside (indicator)
     # bars_ext = ax1.bar(x, extensions_count.values, width * 0.5,
     #                    label='Extensions (count)', color=rgb.tue_gold, alpha=0.9, zorder=3)
     
     ax1.set_xlabel('Year')
-    ax1.set_ylabel('Total Borrowings')
+    ax1.set_ylabel('Number of Borrowings')
     ax1.set_xticks(x)
     ax1.set_xticklabels([int(y) for y in years])
     
@@ -96,11 +96,11 @@ def make_plot(df: pd.DataFrame, outpath) -> None:
     line_removed = ax2.plot(x, removed_rate.values, linewidth=1.3, marker='o', markersize=2.5,
                             linestyle='--', color=rgb.tue_red, label='Removed Data Rate', zorder=5)
     
-    ax2.set_ylabel('Rates')
+    ax2.set_ylabel('Rate')
     ax2.set_ylim(0, max(late_rate.max(), removed_rate.max()) * 1.15)
     ax2.yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'{int(x)}\%'))
     
-    ax1.set_title('Library Borrowing Statistics by Year')
+    ax1.set_title('Annual Library Borrowing Volume and Data Quality Indicators')
     fig.tight_layout()
     
     # Save

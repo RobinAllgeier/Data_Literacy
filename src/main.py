@@ -23,8 +23,9 @@ from src.features import add_features
 from src.validate import validate_borrowings
 
 from src.plotting.plot_1_libary_visit_clock import make_plot as plot1
-from src.plotting.plot_2_learning_curve import make_plot as plot2
 from src.plotting.plot_1_libary_visit_clock import print_user_statistics as user_stats
+from src.plotting.plot_2_learning_curve import make_plot as plot2
+from src.plotting.plot_3_overview import make_plot as plot3
 from src.plotting.plot_4_stickiness_to_media_type import make_plot as plot4
 from src.plotting.plot_4_stickiness_to_media_type import print_media_type_session_statistics as print_media_type_stats
 
@@ -92,6 +93,7 @@ def main() -> None:
     cfg.figures_out_dir.mkdir(parents=True, exist_ok=True)
     plot1(df_feat, cfg.figures_out_dir / "plot_1_clock_plot.pdf")
     plot2(df_feat, cfg.figures_out_dir / "plot_2_learning_curve.pdf")
+    plot3(df_feat, cfg.figures_out_dir / "plot_3_overview.pdf")
     plot4(df_feat, cfg.figures_out_dir / "plot_4_media_type_stickiness.pdf")
 
 

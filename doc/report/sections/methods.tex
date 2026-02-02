@@ -60,18 +60,18 @@ For each experience level $k$, we computed the proportion of late sessions and s
 Let $L_{u,k}$ indicate whether the $k$-th session of user $u$ contains at least one late item.
 The late-return learning curve is then
 \[
-\hat{p}_{L}(k) = \frac{1}{|U_k|} \sum_{u \in U_k} L_{u,k},
+\hat{p}_{L}(k) = \frac{1}{|U_k|} \sum_{u \in U_k} L_{u,k}
 \]
 where $U_k$ is the set of users with at least $k$ sessions.
 The extension curve was computed analogously.
 
-To analyze media-type preferences across user sessions, we define each session’s dominant media type as its most frequent category.
+To analyze media-type preferences across user sessions, we define each session's dominant media type as its most frequent category.
 Sessions with ties are excluded from this analysis.
-A user’s early preferred type is the most frequent media type across combined borrowings in the first $k_0 \in \{1,5,10\}$ sessions,
-and we measure how often later sessions match it. For any $k_0$, we compute a curve over the session index $k$ showing how often the $k$-th session matches the early preferred type.
+A user's early preferred type is the most frequent media type across combined borrowings in the first $k_0 \in \{1,5,10\}$ sessions. 
+We then compute curves over the session index $k$ showing how often the $k$-th session matches this early preferred type for each $k_0$.
 
-
-Uncertainty was quantified via user-level bootstrap resampling.
-Given the dependence of observations within users and the unknown sampling distribution of $\hat{p}_L(k)$, parametric methods are unsuitable.
-We thus resampled users with replacement, reconstructed their session sequences, and recomputed the learning curves for each bootstrap sample.
+Uncertainty for both learning curves and media stickiness measures was quantified via user-level bootstrap resampling.
+Given the dependence of observations within users and the unknown sampling distribution of these estimates, parametric methods are unsuitable.
+We thus resampled users with replacement, reconstructed their session sequences, and recomputed all curves for each bootstrap sample.
 Confidence intervals were derived from the empirical distributions of these estimates~\cite{Davison_Hinkley_1997}.
+
